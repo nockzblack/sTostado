@@ -9,9 +9,6 @@ newFile = open('plexus.txt','w')
 # Here we initiate a new .txt document in order to verify the data extraction
 pdfNewFile = open(Document,'rb')
 pdfReader = PyPDF2.PdfFileReader(pdfNewFile)
-print(pdfReader) #delete
-
-#print("The document has", pdfReader.getNumPages(), "pages")
 
 pageObj = pdfReader.getPage(1)
 text = pageObj.extractText() # Extraction of the data text page
@@ -29,20 +26,16 @@ if "Time AbovePeak" in toWork: # It might be this string on the text or not
     index_Variable = toWork.index("Time AbovePeak")
 else:
     index_Variable = toWork.index("Delta T")
-
-
-print("Index of the Positive Slope: ", index_PositiveSlope)
-print("Index of the Positive Slope Time: ", index_PositiveSlopeTime)
-print("Index of the Time Above Liquids: ", index_TimeAboveLiquids)
-print("Index of the Peak Temperature: ", index_PeakTemperature)
-
+    
+fallo=0
 
 def ValuesPositiveSlope():
     PositiveSlopeData = ""
     PositiveSlope = toWork[index_PositiveSlope:index_PositiveSlopeTime]
     for i in PositiveSlope:
         if "*" in PositiveSlope:
-            return "The document has an error in the values of positive slope"
+            fallo=1
+            return fallo
         elif i in "0123456789.":
             PositiveSlopeData += i
     PositiveSlopeDef = []
@@ -69,7 +62,8 @@ def ValuesTimeAboveLiquids():
         TimeAboveLiquids = TimeAboveLiquids[x+1:]
     for i in TimeAboveLiquids:
         if "*" in TimeAboveLiquids:
-            return "The document has an error in the values of time above liquids"
+            fallo=1
+            return fallo
         elif i in "0123456789.":
             TimeAboveLiquidsData += i
     TimeAboveLiquidsDef = []
@@ -93,7 +87,8 @@ def ValuesPeakTemperature():
     PeakTemperature = toWork[index_PeakTemperature:index_Variable]
     for i in PeakTemperature:
         if "*" in PeakTemperature:
-            return "The document has an error in the values of peak temperature"
+            fallo=1
+            return fallo
         elif i in "0123456789.*":
             PeakTemperatureData += i
     PeakTemperatureDef = []
@@ -106,14 +101,22 @@ def ValuesPeakTemperature():
         secondPart = PeakTemperatureData[point:end]
         term = firstPart + secondPart
         PeakTemperatureDef.append(term)
-        y = begin
         PeakTemperatureData = PeakTemperatureData[end:]
         cont += 1
     PeakTemperatureDef.append(PeakTemperatureData)
     return PeakTemperatureDef
 
-print(ValuesPositiveSlope())
-print(ValuesTimeAboveLiquids())
-print(ValuesPeakTemperature())
+VSP=ValuesPositiveSlope()
+VTAL=ValuesTimeAboveLiquids()
+VPT=ValuesPeakTemperature()
+
+if VSP==1 or VTAL==1 or VPT==1: #verifying if it is an error in variables
+    print("There is an error in some variables")
+else:
+    print(VSP) #print the values of the Positive Slope
+    print(VTAL) #print the values of the Time Avobe Liquids
+    print(VPT) #print the values of the Peak Temperature
+
+
 pdfNewFile.close()
 newFile.close()
