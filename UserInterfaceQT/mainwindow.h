@@ -24,8 +24,11 @@ private slots:
 
     void on_solderPasteCB_activated(int index);
 
+
 private:
     Ui::MainWindow *ui;
+
+    void updateTable(QStringList &value);
 };
 
 #endif // MAINWINDOW_H
