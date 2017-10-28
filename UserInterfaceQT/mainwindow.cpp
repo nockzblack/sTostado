@@ -11,6 +11,7 @@
 #include <QChart>
 #include <QtCharts/QChartView>
 #include <QtCharts/QLineSeries>
+#include <QtCharts/QValueAxis>
 
 QT_CHARTS_USE_NAMESPACE
 
@@ -262,3 +263,91 @@ void MainWindow::updateTable(QStringList &values) {
     ui->parametersTW->setItem(0,4, minimumRise);
     ui->parametersTW->setItem(0,5, maximumRise);
 }
+
+
+QStringList MainWindow::getRiseSlopeValues() {
+
+    //qDebug() << ui->parametersTW->item(4,0)->text();
+    QString mimRise = ui->parametersTW->item(4,0)->text();
+    QString maxRise = ui->parametersTW->item(5,0)->text();
+
+    QStringList riseValues = {mimRise, maxRise};
+
+    return riseValues;
+}
+
+
+void MainWindow::on_positiveSlopePB_clicked()
+{
+    QStringList riseValues = getRiseSlopeValues(); // getting the actual data from the acceptable parameters table
+
+    //S etting the QLineSeries needed
+    QFont labelFont("Helvetica", 15, QFont::Bold); // fonts for all the labels
+
+    // Setting Specification Limits (LSL & USL)
+    QPen pen(Qt::green);
+    pen.setWidth(3);
+
+    // LSL line (Lower Specification Limit)
+    QLineSeries *LSLseries = new QLineSeries();
+    LSLseries->setName("LSL");
+    LSLseries->setPen(pen);
+    LSLseries->setPointLabelsVisible(true);
+    LSLseries->setPointLabelsClipping(true);
+    LSLseries->setPointLabelsFont(labelFont);
+    LSLseries->setPointLabelsFormat("@yPoint");
+    LSLseries->append(1, riseValues[0].toDouble());
+    LSLseries->append(5, riseValues[0].toDouble());
+
+
+    // USL line (Upper Specification Limit)
+    QLineSeries *USLseries = new QLineSeries();
+    USLseries->setName("USL");
+    USLseries->setPen(pen);
+    USLseries->setPointLabelsVisible(true);
+    USLseries->setPointLabelsClipping(true);
+    USLseries->setPointLabelsFont(labelFont);
+    USLseries->setPointLabelsFormat("@yPoint");
+    USLseries->append(1, riseValues[1].toDouble());
+    USLseries->append(5, riseValues[1].toDouble());
+
+
+    // Setting the axis for the chart
+    // Axis X
+    QValueAxis *axisX = new QValueAxis;
+    axisX->setTitleText("Termocouples");
+    axisX->setRange(0, 6);
+    axisX->setTickCount(7);
+    axisX->setLabelFormat("%d");
+
+    // Axis Y
+    QValueAxis *axisY = new QValueAxis;
+    axisY->setTitleText("Measurements (Cº/sec)");
+    axisY->setMax(3);
+    axisY->setTickCount(5);
+    axisY->setLabelFormat("%.1f");
+
+    // Creating the chart
+    QChart *PSChart = new QChart();
+    PSChart->setTitle("Positive Slope Chart");
+    PSChart->legend()->hide();
+    // Adding the LSLseries
+    PSChart->addSeries(LSLseries);
+    PSChart->setAxisX(axisX,LSLseries);
+    PSChart->setAxisY(axisY,LSLseries);
+    // Adding the USLseries
+    PSChart->addSeries(USLseries);
+    PSChart->setAxisX(axisX,USLseries);
+    PSChart->setAxisY(axisY,USLseries);
+    //chart->createDefaultAxes();
+
+    // Initializing a chart view with our setted PSChart
+    QChartView *PSChartView = new QChartView(PSChart);
+    PSChartView->setRenderHint(QPainter::Antialiasing);
+
+    posSlopeWindow = new MainWindow;
+    posSlopeWindow->setCentralWidget(PSChartView);
+    posSlopeWindow->resize(600,400);
+    posSlopeWindow->show();
+}
+
