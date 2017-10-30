@@ -276,6 +276,26 @@ QStringList MainWindow::getRiseSlopeValues() {
     return riseValues;
 }
 
+QStringList MainWindow::getPeakTempValues() {
+
+    QString mimPeakTemp = ui->parametersTW->item(2,0)->text();
+    QString maxPeakTemp = ui->parametersTW->item(3,0)->text();
+
+    QStringList peakTempValues = {mimPeakTemp, maxPeakTemp};
+
+    return peakTempValues;
+}
+
+QStringList MainWindow::getTimeAboveValues() {
+
+    QString mimTime = ui->parametersTW->item(0,0)->text();
+    QString maxTime = ui->parametersTW->item(1,0)->text();
+
+    QStringList timeValues = {mimTime, maxTime};
+
+    return timeValues;
+}
+
 
 void MainWindow::on_positiveSlopePB_clicked()
 {
@@ -327,6 +347,7 @@ void MainWindow::on_positiveSlopePB_clicked()
     axisY->setTickCount(5);
     axisY->setLabelFormat("%.1f");
 
+
     // Creating the chart
     QChart *PSChart = new QChart();
     PSChart->setTitle("Positive Slope Chart");
@@ -341,6 +362,7 @@ void MainWindow::on_positiveSlopePB_clicked()
     PSChart->setAxisY(axisY,USLseries);
     //chart->createDefaultAxes();
 
+
     // Initializing a chart view with our setted PSChart
     QChartView *PSChartView = new QChartView(PSChart);
     PSChartView->setRenderHint(QPainter::Antialiasing);
@@ -350,4 +372,3 @@ void MainWindow::on_positiveSlopePB_clicked()
     posSlopeWindow->resize(600,400);
     posSlopeWindow->show();
 }
-
