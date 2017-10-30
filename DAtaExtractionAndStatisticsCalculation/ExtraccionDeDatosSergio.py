@@ -99,10 +99,46 @@ def ValuesPeakTemperature():
     OutPut.write("1")
     return PeakTemperatureDef
 
+
+TemperatureDataDef = []
+TemperatureDataDef2 = []
+def OvenTemperatureData():
+    GeneralData = text[index_Lower:]
+    TemperatureData = GeneralData.split(" ")
+    TemperatureData2 = []
+    GeneralData2 = ""
+    if "Zona" in GeneralData: # Language of the document modify the format
+        for i in GeneralData:
+            if i == " ":
+                GeneralData2 += ""
+            else:
+                GeneralData2 += i
+        index_p = GeneralData.index(":")
+        GeneralData2 = GeneralData2[index_p:]
+        GeneralData2 = GeneralData2.split(".")
+        for i in range(10):
+            for j in range(2):
+                GeneralData2.remove(GeneralData2[0])
+            TemperatureDataDef.append(GeneralData2[0])
+            GeneralData2.remove(GeneralData2[0])
+        return TemperatureDataDef
+    else:
+        TemperatureData = TemperatureData[2]
+        TemperatureData = TemperatureData[TemperatureData.index("H"):]
+        TemperatureData = TemperatureData.split(".")
+        for i in range(10):
+            for j in range(2):
+                TemperatureData.remove(TemperatureData[0])
+            TemperatureDataDef2.append(TemperatureData[0])
+            TemperatureData.remove(TemperatureData[0])
+        return TemperatureDataDef2
+
+    
 ValuesPositiveSlope()
 ValuesTimeAboveLiquids()
 ValuesPeakTemperature()
-#OvenTemperatureData()
+OvenTemperatureData()
+
 
 OutPut.close()
 pdfNewFile.close()
