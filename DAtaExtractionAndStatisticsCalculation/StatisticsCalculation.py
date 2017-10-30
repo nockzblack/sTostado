@@ -18,7 +18,7 @@ while cont < len(conclutions):
 if cont1 == 3:
     print("Lets continue")
 else:
-    print("Impossible to calculate. Try to generate the data again.")
+    print("Impossible to calculate. There is an error on an thermocouple. Try to generate the data again.")
 
 
 SolderPaste1 = "Indium 8.9E Lead free"
