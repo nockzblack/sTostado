@@ -388,3 +388,108 @@ void MainWindow::on_positiveSlopePB_clicked()
     posSlopeWindow->show();
 
 }
+
+//graph displayed by clicking TAL result button.
+void MainWindow::on_TALPB_clicked()
+{
+     QStringList timeValues = getTimeAboveValues(); //getting value from acceptable parameters.
+
+      //setting the font for the labels the font for all labels will be the same.
+      QFont labelFont("Helvetica", 15, QFont::Bold); // fonts for all the labels
+
+      //setting the color for the line in the graph also setting the width of this line.
+      QPen pen(Qt::green);
+      pen.setWidth(3);
+
+      //Lower limit
+      QLineSeries *LSLseries = new QLineSeries();
+      LSLseries->setName("LSL");
+      LSLseries->setPen(pen);
+      LSLseries->setPointLabelsVisible(true);
+      LSLseries->setPointLabelsClipping(true);
+      LSLseries->setPointLabelsFont(labelFont);
+      LSLseries->setPointLabelsFormat("@yPoint");
+      LSLseries->append(1, timeValues[0].toDouble());
+      LSLseries->append(5, timeValues[0].toDouble());
+
+      //Upper limit
+      QLineSeries *USLseries = new QLineSeries();
+      USLseries->setName("USL");
+      USLseries->setPen(pen);
+      USLseries->setPointLabelsVisible(true);
+      USLseries->setPointLabelsClipping(true);
+      USLseries->setPointLabelsFont(labelFont);
+      USLseries->setPointLabelsFormat("@yPoint");
+      USLseries->append(1, timeValues[1].toDouble());
+      USLseries->append(5, timeValues[1].toDouble());
+
+      //setting the label of the x axis and the domain.
+      QValueAxis *axisX = new QValueAxis;
+      axisX->setTitleText("Termocouples");
+      axisX->setRange(0, 6);
+      axisX->setTickCount(7);
+      axisX->setLabelFormat("%d");
+
+      // Setting the label of the y axis and the range
+      QValueAxis *axisY = new QValueAxis;
+      axisY->setTitleText("Measurements (sec)");
+      axisY->setMax(100);
+      axisY->setTickCount(5);
+      axisY->setLabelFormat("%.1f");
+
+      // setting the chart
+      QChart *PSChart = new QChart();
+      PSChart->setTitle("TAL chart");
+      PSChart->legend()->hide();
+      // Adding the LSLseries
+      PSChart->addSeries(LSLseries);
+      PSChart->setAxisX(axisX,LSLseries);
+      PSChart->setAxisY(axisY,LSLseries);
+      // Adding the USLseries
+      PSChart->addSeries(USLseries);
+      PSChart->setAxisX(axisX,USLseries);
+      PSChart->setAxisY(axisY,USLseries);
+
+      // Initializing a chart view so later we can add it and make it visible.
+      QChartView *TALCV = new QChartView(PSChart);
+      TALCV->setRenderHint(QPainter::Antialiasing);
+
+      //creating new table next to the graph.
+      QTableWidget *TALTW = new QTableWidget(5, 6, this);
+      QStringList tableHeadersTitles = {"Termo-\ncouple","TAL","Minimum time\nabove liquid ","Maximum time\nabove liquid","UPCL","LPCL"};
+      TALTW->setHorizontalHeaderLabels(tableHeadersTitles);
+      TALTW->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
+      QHeaderView *TALVHV = TALTW->verticalHeader();
+      TALVHV->setSectionResizeMode(QHeaderView::Stretch);
+      QHeaderView *TALHHV = TALTW -> horizontalHeader();
+      TALHHV->setSectionResizeMode(QHeaderView::Stretch);
+
+      //Setting the labels for the chart next to the graph.
+      QVBoxLayout *tableLabelLayout = new QVBoxLayout;
+      QLabel *titleLabel = new QLabel;
+      QFont titleFont("Helvetica", 16, QFont::Bold);
+      titleLabel->setFont(titleFont);
+      titleLabel->setText("Reflow Results");
+      titleLabel->setAlignment(Qt::AlignCenter);
+
+      tableLabelLayout->addWidget(titleLabel);
+      tableLabelLayout->addWidget(TALTW);
+
+      //makeWindow();
+      QHBoxLayout *layout = new QHBoxLayout;
+      layout->addWidget(TALCV);
+      layout->addLayout(tableLabelLayout);
+
+
+      // Set layout so we can se it in the interface.
+      QWidget *posSlopeWindow = new QWidget();
+      posSlopeWindow->setLayout(layout);
+      posSlopeWindow->setWindowTitle("TAL Results");
+      posSlopeWindow->resize(800,360);
+      posSlopeWindow->show();
+
+
+
+}
+
