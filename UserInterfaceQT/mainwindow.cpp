@@ -7,6 +7,7 @@
 #include <QMessageBox>
 #include <QDebug>
 #include <QStringList>
+#include <QTableWidget>
 
 #include <QChart>
 #include <QtCharts/QChartView>
@@ -46,21 +47,18 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    //ui->buttomsLayout->setSizeConstraint(QLayout::SetFixedSize);
     //qDebug() << ui->familyCB->currentText();
-    //ui->parametersTW->setHorizontalHeader(QHeaderView* );
-    //ui->parametersTW->setHorizontalHeaderItem(0, new QTableWidgetItem("Prueba"));
 
-    //ui->parametersTW->resizeRowsToContents();
-    //ui->parametersTW->resizeColumnsToContents();
-    //ui->parametersTW->adjustSize();
+
 
     // Set default values to parameters TW
-    ui->parametersTW->resizeColumnToContents(0);
+    QHeaderView *header = ui->parametersTW ->horizontalHeader();
+    header->setSectionResizeMode(QHeaderView::Stretch);
+    QHeaderView *OtherHeader = ui->parametersTW ->verticalHeader();
+    OtherHeader->setSectionResizeMode(QHeaderView::Stretch);
     ui->parametersTW->setEditTriggers(QAbstractItemView::NoEditTriggers);
     QStringList actualValues = {"***","***","***","***","***","***"};
     updateTable(actualValues);
-
 
 }
 
@@ -248,22 +246,12 @@ void MainWindow::updateTable(QStringList &values) {
 
     // This just create new items with the information on the list values and
     // put it into the table.
-
-    QTableWidgetItem  *minimumTime = new QTableWidgetItem(values[0]);
-    QTableWidgetItem  *maximumTime = new QTableWidgetItem(values[1]);
-    QTableWidgetItem  *minimumPeak = new QTableWidgetItem(values[2]);
-    QTableWidgetItem  *maximumPeak = new QTableWidgetItem(values[3]);
-    QTableWidgetItem  *minimumRise = new QTableWidgetItem(values[4]);
-    QTableWidgetItem  *maximumRise = new QTableWidgetItem(values[5]);
-
-    ui->parametersTW->setItem(0,0, minimumTime);
-    ui->parametersTW->setItem(0,1, maximumTime);
-    ui->parametersTW->setItem(0,2, minimumPeak);
-    ui->parametersTW->setItem(0,3, maximumPeak);
-    ui->parametersTW->setItem(0,4, minimumRise);
-    ui->parametersTW->setItem(0,5, maximumRise);
+    for (int i = 0; i<6; i++) {
+        QTableWidgetItem  *auxCellTWI = new QTableWidgetItem(values[i]);
+        auxCellTWI->setTextAlignment(Qt::AlignCenter);
+        ui->parametersTW->setItem(0,i, auxCellTWI);
+    }
 }
-
 
 QStringList MainWindow::getRiseSlopeValues() {
 
@@ -295,7 +283,6 @@ QStringList MainWindow::getTimeAboveValues() {
 
     return timeValues;
 }
-
 
 void MainWindow::on_positiveSlopePB_clicked()
 {
@@ -360,15 +347,44 @@ void MainWindow::on_positiveSlopePB_clicked()
     PSChart->addSeries(USLseries);
     PSChart->setAxisX(axisX,USLseries);
     PSChart->setAxisY(axisY,USLseries);
-    //chart->createDefaultAxes();
-
 
     // Initializing a chart view with our setted PSChart
-    QChartView *PSChartView = new QChartView(PSChart);
-    PSChartView->setRenderHint(QPainter::Antialiasing);
+    QChartView *positiveSlopeCV = new QChartView(PSChart);
+    positiveSlopeCV->setRenderHint(QPainter::Antialiasing);
 
-    posSlopeWindow = new MainWindow;
-    posSlopeWindow->setCentralWidget(PSChartView);
-    posSlopeWindow->resize(600,400);
+
+    QTableWidget *positiveSlopeTW = new QTableWidget(5, 6, this);
+    QStringList tableHeadersTitles = {"Termo-\ncouple","Positive\n Slope","Minimum\nrise slope","Maximum\nrise slope","UPCL","LPCL"};
+    positiveSlopeTW->setHorizontalHeaderLabels(tableHeadersTitles);
+    positiveSlopeTW->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
+    QHeaderView *positiveSlopeVHV = positiveSlopeTW->verticalHeader();
+    positiveSlopeVHV->setSectionResizeMode(QHeaderView::Stretch);
+    QHeaderView *positiveSlopeHHV = positiveSlopeTW -> horizontalHeader();
+    positiveSlopeHHV->setSectionResizeMode(QHeaderView::Stretch);
+
+
+    QVBoxLayout *tableLabelLayout = new QVBoxLayout;
+    QLabel *titleLabel = new QLabel;
+    QFont titleFont("Helvetica", 16, QFont::Bold);
+    titleLabel->setFont(titleFont);
+    titleLabel->setText("Reflow Results");
+    titleLabel->setAlignment(Qt::AlignCenter);
+
+    tableLabelLayout->addWidget(titleLabel);
+    tableLabelLayout->addWidget(positiveSlopeTW);
+
+    //makeWindow();
+    QHBoxLayout *layout = new QHBoxLayout;
+    layout->addWidget(positiveSlopeCV);
+    layout->addLayout(tableLabelLayout);
+
+
+    // Set layout in QWidget
+    QWidget *posSlopeWindow = new QWidget();
+    posSlopeWindow->setLayout(layout);
+    posSlopeWindow->setWindowTitle("Positive Slope Results");
+    posSlopeWindow->resize(800,360);
     posSlopeWindow->show();
+
 }
