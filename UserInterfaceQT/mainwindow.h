@@ -32,6 +32,8 @@ private slots:
     QStringList getTimeAboveValues();
 
     void on_positiveSlopePB_clicked();
+    
+    void on_TALPB_clicked();
 
 
 
