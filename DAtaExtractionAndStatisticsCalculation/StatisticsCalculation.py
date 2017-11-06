@@ -1,10 +1,7 @@
 import ExtraccionDeDatosSergio as Extraction
-from ExtraccionDeDatosSergio import PositiveSlopeDef as PositiveSlopeDef
-from ExtraccionDeDatosSergio import TimeAboveLiquidsDef as TimeAboveLiquidsDef
-from ExtraccionDeDatosSergio import PeakTemperatureDef as PeakTemperatureeDef
 
 
-DocMessage = open("OutPuts.txt")
+DocMessage = open("OutPuts.txt", 'r')
 message = DocMessage.read()
 conclutions = message[0:]
 cont = 0
