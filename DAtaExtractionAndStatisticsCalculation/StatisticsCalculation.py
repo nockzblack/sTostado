@@ -1,10 +1,7 @@
 import ExtraccionDeDatosSergio as Extraction
-from ExtraccionDeDatosSergio import PositiveSlopeDef as PositiveSlopeDef
-from ExtraccionDeDatosSergio import TimeAboveLiquidsDef as TimeAboveLiquidsDef
-from ExtraccionDeDatosSergio import PeakTemperatureDef as PeakTemperatureeDef
 
 
-DocMessage = open("OutPuts.txt")
+DocMessage = open("OutPuts.txt", 'r')
 message = DocMessage.read()
 conclutions = message[0:]
 cont = 0
@@ -18,7 +15,7 @@ while cont < len(conclutions):
 if cont1 == 3:
     print("Lets continue")
 else:
-    print("Impossible to calculate. There is an error on an thermocouple. Try to generate the data again.")
+    print("Impossible to calculate. Try to generate the data again.")
 
 
 SolderPaste1 = "Indium 8.9E Lead free"
@@ -28,19 +25,19 @@ SolderPaste4 = "Alpha OM 338 PT"
 SolderPaste5 = "Indium SMQ98H (Sn63Pb37)"
 
 MinRS = 0  # MinimumRiseSlope
-MaxRS = 0 # MaximumRiseSlope
-MinTAL = 0 # MinimumTimeAboveLiquids
-MaxTAL = 0 # MaximumTimeAboveLiquids
-MinPT = 0 # MinimumPeakTemperature
-MaxPT = 0 # MaximumPeakTemperature
-TALObj = 0 # TimeAboveLiquidsObjective
-PTObj = 0 # PeakTemperatureObjective
-UPCLRS = 0 # UpperPreControlLimitRiseSlope
-LPCLRS = 0 # LowerPreControlLimitRiseSlope
-UPCLTAL = 0 #UpperPrecontrolLimitTimeAboveLiquids
-LPCLTAL = 0 #LowerPreControlLimitTimeAboveLiquids
-UPCLPT = 0 # UpperPreControlLimitPeakTemperature
-LPCLPT = 0 # LowerPreControlLimitPeakTemperature
+MaxRS = 0  # MaximumRiseSlope
+MinTAL = 0  # MinimumTimeAboveLiquids
+MaxTAL = 0  # MaximumTimeAboveLiquids
+MinPT = 0  # MinimumPeakTemperature
+MaxPT = 0  # MaximumPeakTemperature
+TALObj = 0  # TimeAboveLiquidsObjective
+PTObj = 0  # PeakTemperatureObjective
+UPCLRS = 0  # UpperPreControlLimitRiseSlope
+LPCLRS = 0  # LowerPreControlLimitRiseSlope
+UPCLTAL = 0  # UpperPrecontrolLimitTimeAboveLiquids
+LPCLTAL = 0  # LowerPreControlLimitTimeAboveLiquids
+UPCLPT = 0  # UpperPreControlLimitPeakTemperature
+LPCLPT = 0  # LowerPreControlLimitPeakTemperature
 
 UserElection = input("Please provide the solder paste you are using: ")
 
@@ -54,12 +51,12 @@ while True:
         MaxPT = 262.00
         TALObj = 65.00
         PTObj = 245.00
-        UPCLRS = (((MaxRS - MinRS)/4)*3) + MinRS
-        LPCLRS = ((MaxRS - MinRS)/4) + MinRS
-        UPCLTAL = (((MaxTAL - MinTAL)/4)*3) + MinTAL
-        LPCLTAL = ((MaxTAL - MinTAL)/4) + MinTAL
-        UPCLPT = (((MaxPT - MinPT)/4)*3) + MinPT
-        LPCLPT = ((MaxPT - MinPT)/4) + MinPT
+        UPCLRS = (((MaxRS - MinRS) / 4) * 3) + MinRS
+        LPCLRS = ((MaxRS - MinRS) / 4) + MinRS
+        UPCLTAL = (((MaxTAL - MinTAL) / 4) * 3) + MinTAL
+        LPCLTAL = ((MaxTAL - MinTAL) / 4) + MinTAL
+        UPCLPT = (((MaxPT - MinPT) / 4) * 3) + MinPT
+        LPCLPT = ((MaxPT - MinPT) / 4) + MinPT
         break
     elif UserElection == SolderPaste3:
         MinRS = 0.8
@@ -70,12 +67,12 @@ while True:
         MaxPT = 255.00
         TALObj = 60.00
         PTObj = 245.00
-        UPCLRS = (((MaxRS - MinRS)/4)*3) + MinRS
-        LPCLRS = ((MaxRS - MinRS)/4) + MinRS
-        UPCLTAL = (((MaxTAL - MinTAL)/4)*3) + MinTAL
-        LPCLTAL = ((MaxTAL - MinTAL)/4) + MinTAL
-        UPCLPT = (((MaxPT - MinPT)/4)*3) + MinPT
-        LPCLPT = ((MaxPT - MinPT)/4) + MinPT
+        UPCLRS = (((MaxRS - MinRS) / 4) * 3) + MinRS
+        LPCLRS = ((MaxRS - MinRS) / 4) + MinRS
+        UPCLTAL = (((MaxTAL - MinTAL) / 4) * 3) + MinTAL
+        LPCLTAL = ((MaxTAL - MinTAL) / 4) + MinTAL
+        UPCLPT = (((MaxPT - MinPT) / 4) * 3) + MinPT
+        LPCLPT = ((MaxPT - MinPT) / 4) + MinPT
         break
     elif UserElection == SolderPaste4:
         MinRS = 0.8
@@ -86,12 +83,12 @@ while True:
         MaxPT = 250.00
         TALObj = 65.00
         PTObj = 240.00
-        UPCLRS = (((MaxRS - MinRS)/4)*3) + MinRS
-        LPCLRS = ((MaxRS - MinRS)/4) + MinRS
-        UPCLTAL = (((MaxTAL - MinTAL)/4)*3) + MinTAL
-        LPCLTAL = ((MaxTAL - MinTAL)/4) + MinTAL
-        UPCLPT = (((MaxPT - MinPT)/4)*3) + MinPT
-        LPCLPT = ((MaxPT - MinPT)/4) + MinPT
+        UPCLRS = (((MaxRS - MinRS) / 4) * 3) + MinRS
+        LPCLRS = ((MaxRS - MinRS) / 4) + MinRS
+        UPCLTAL = (((MaxTAL - MinTAL) / 4) * 3) + MinTAL
+        LPCLTAL = ((MaxTAL - MinTAL) / 4) + MinTAL
+        UPCLPT = (((MaxPT - MinPT) / 4) * 3) + MinPT
+        LPCLPT = ((MaxPT - MinPT) / 4) + MinPT
         break
     elif UserElection == SolderPaste5:
         MinRS = 0.5
@@ -102,10 +99,10 @@ while True:
         MaxPT = 224.00
         TALObj = 65.00
         PTObj = 215.00
-        UPCLRS = (((MaxRS - MinRS)/4)*3) + MinRS
-        LPCLRS = ((MaxRS - MinRS)/4) + MinRS
-        UPCLTAL = (((MaxTAL - MinTAL)/4)*3) + MinTAL
-        LPCLTAL = ((MaxTAL - MinTAL)/4) + MinTAL
-        UPCLPT = (((MaxPT - MinPT)/4)*3) + MinPT
-        LPCLPT = ((MaxPT - MinPT)/4) + MinPT
+        UPCLRS = (((MaxRS - MinRS) / 4) * 3) + MinRS
+        LPCLRS = ((MaxRS - MinRS) / 4) + MinRS
+        UPCLTAL = (((MaxTAL - MinTAL) / 4) * 3) + MinTAL
+        LPCLTAL = ((MaxTAL - MinTAL) / 4) + MinTAL
+        UPCLPT = (((MaxPT - MinPT) / 4) * 3) + MinPT
+        LPCLPT = ((MaxPT - MinPT) / 4) + MinPT
         break
