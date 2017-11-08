@@ -51,14 +51,26 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
 
-    // Set default values to parameters TW
+    // Set default values and properties to parameters TW
     QHeaderView *header = ui->parametersTW ->horizontalHeader();
     header->setSectionResizeMode(QHeaderView::Stretch);
     QHeaderView *OtherHeader = ui->parametersTW ->verticalHeader();
     OtherHeader->setSectionResizeMode(QHeaderView::Stretch);
     ui->parametersTW->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    QStringList actualValues = {"***","***","***","***","***","***"};
-    updateTable(actualValues);
+    QStringList actualValuesPTW = {"","","","","",""};
+    updateParametersTW(actualValuesPTW);
+
+    // Set default values and properties to parameters TW
+    QHeaderView *tempHorHeader = ui->tempTW->horizontalHeader();
+    tempHorHeader->setSectionResizeMode(QHeaderView::Stretch);
+    QHeaderView *tempVerHeader = ui->tempTW ->verticalHeader();
+    tempVerHeader->setSectionResizeMode(QHeaderView::Stretch);
+    ui->tempTW->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    QStringList actualValuesTTW = {"","","","","","","","","",""};
+    updateTempTW(actualValuesTTW);
+
+    // Set solder paste combox box unenable because this is selected automatically
+    ui->solderPasteCB->setEnabled(false);
 
 }
 
@@ -120,31 +132,51 @@ void MainWindow::on_groupCB_activated(int index)
     case(1):
         if (index == 1) {
             ui->modelCB->addItems(videoRockstar);
+            setParameterTW(1);
+            ui->solderPasteCB->setCurrentIndex(1);
+
         } else if (index == 2) {
             ui->modelCB->addItems(videoAGB);
+            setParameterTW(1);
+            ui->solderPasteCB->setCurrentIndex(1);
+
         } else if (index == 3) {
             ui->modelCB->addItems(videoME7mil);
+            setParameterTW(2);
+            ui->solderPasteCB->setCurrentIndex(2);
+
         }else if (index == 4) {
             ui->modelCB->addItems(videoCAP);
+            setParameterTW(1);
+            ui->solderPasteCB->setCurrentIndex(1);
         }
         break;
 
     case(2):
         if (index == 1){
             ui->modelCB->addItems(dsrLeadFree);
+            setParameterTW(2);
+            ui->solderPasteCB->setCurrentIndex(2);
+
         } else if (index==2){
             ui->modelCB->addItems(dsrLegacyLead);
+            setParameterTW(5);
+            ui->solderPasteCB->setCurrentIndex(5);
         }
        break;
 
     case(3):
         if (index == 1){
             ui->modelCB->addItems(picsGroup_Pics);
+            setParameterTW(3);
+            ui->solderPasteCB->setCurrentIndex(3);
         }
         break;
     case(4):
         if (index == 1){
             ui->modelCB->addItems(e6milGroup_E6mil);
+            setParameterTW(4);
+            ui->solderPasteCB->setCurrentIndex(4);
         }
         break;
     }
@@ -193,7 +225,8 @@ void MainWindow::on_selectFilePB_clicked()
         }
 }
 
-void MainWindow::on_solderPasteCB_activated(int index)
+
+void MainWindow::setParameterTW(int index)
 {
     /*
      * When the solder paste combo box change it is updated the values on the
@@ -207,7 +240,7 @@ void MainWindow::on_solderPasteCB_activated(int index)
         case 1:
         {
             QStringList actualValues = {"30","100","230","262","0.5","2.5"};
-            updateTable(actualValues);
+            updateParametersTW(actualValues);
         }
         break;
 
@@ -215,34 +248,37 @@ void MainWindow::on_solderPasteCB_activated(int index)
         case 2:
         {
             QStringList actualValues = {"30","100","230","262","0.5","2.5"};
-            updateTable(actualValues);
+            updateParametersTW(actualValues);
          }
         break;
 
         case 3:
         {
             QStringList actualValues = {"30","90","232","255","0.8","1.5"};
-            updateTable(actualValues);
+            updateParametersTW(actualValues);
          }
         break;
 
         case 4:
         {
             QStringList actualValues = {"30","90","230","250","0.8","1.5"};
-            updateTable(actualValues);
+            updateParametersTW(actualValues);
          }
         break;
 
         case 5:
         {
             QStringList actualValues = {"30","90","208","228","0.5","2"};
-            updateTable(actualValues);
+            updateParametersTW(actualValues);
          }
         break;
     }
 }
 
-void MainWindow::updateTable(QStringList &values) {
+
+
+
+void MainWindow::updateParametersTW(QStringList &values) {
 
     // This just create new items with the information on the list values and
     // put it into the table.
@@ -250,6 +286,17 @@ void MainWindow::updateTable(QStringList &values) {
         QTableWidgetItem  *auxCellTWI = new QTableWidgetItem(values[i]);
         auxCellTWI->setTextAlignment(Qt::AlignCenter);
         ui->parametersTW->setItem(0,i, auxCellTWI);
+    }
+}
+
+void MainWindow::updateTempTW(QStringList &values) {
+
+    // This just create new items with the information on the list values and
+    // put it into the table.
+    for (int i = 0; i<10; i++) {
+        QTableWidgetItem  *auxCellTWI = new QTableWidgetItem(values[i]);
+        auxCellTWI->setTextAlignment(Qt::AlignCenter);
+        ui->tempTW->setItem(0,i, auxCellTWI);
     }
 }
 
@@ -284,6 +331,8 @@ QStringList MainWindow::getTimeAboveValues() {
     return timeValues;
 }
 
+
+//Graph and table showed by clicking Positive Slopes Results Button
 void MainWindow::on_positiveSlopePB_clicked()
 {
     QStringList riseValues = getRiseSlopeValues(); // getting the actual data from the acceptable parameters table
@@ -292,7 +341,7 @@ void MainWindow::on_positiveSlopePB_clicked()
     QFont labelFont("Helvetica", 15, QFont::Bold); // fonts for all the labels
 
     // Setting Specification Limits (LSL & USL)
-    QPen pen(Qt::green);
+    QPen pen(Qt::yellow);
     pen.setWidth(3);
 
     // LSL line (Lower Specification Limit)
@@ -389,112 +438,108 @@ void MainWindow::on_positiveSlopePB_clicked()
 
 }
 
-//graph displayed by clicking TAL result button.
+//Graph and table showed by clicking TAL Results Button
 void MainWindow::on_TALPB_clicked()
 {
-     QStringList timeValues = getTimeAboveValues(); //getting value from acceptable parameters.
+    QStringList timeValues = getTimeAboveValues(); //getting value from acceptable parameters.
 
-      //setting the font for the labels the font for all labels will be the same.
-      QFont labelFont("Helvetica", 15, QFont::Bold); // fonts for all the labels
+     //setting the font for the labels the font for all labels will be the same.
+     QFont labelFont("Helvetica", 15, QFont::Bold); // fonts for all the labels
 
-      //setting the color for the line in the graph also setting the width of this line.
-      QPen pen(Qt::green);
-      pen.setWidth(3);
+     //setting the color for the line in the graph also setting the width of this line.
+     QPen pen(Qt::yellow);
+     pen.setWidth(3);
 
-      //Lower limit
-      QLineSeries *LSLseries = new QLineSeries();
-      LSLseries->setName("LSL");
-      LSLseries->setPen(pen);
-      LSLseries->setPointLabelsVisible(true);
-      LSLseries->setPointLabelsClipping(true);
-      LSLseries->setPointLabelsFont(labelFont);
-      LSLseries->setPointLabelsFormat("@yPoint");
-      LSLseries->append(1, timeValues[0].toDouble());
-      LSLseries->append(5, timeValues[0].toDouble());
+     //Lower limit
+     QLineSeries *LSLseries = new QLineSeries();
+     LSLseries->setName("LSL");
+     LSLseries->setPen(pen);
+     LSLseries->setPointLabelsVisible(true);
+     LSLseries->setPointLabelsClipping(false);
+     LSLseries->setPointLabelsFont(labelFont);
+     LSLseries->setPointLabelsFormat("@yPoint");
+     LSLseries->append(1, timeValues[0].toDouble());
+     LSLseries->append(5, timeValues[0].toDouble());
 
-      //Upper limit
-      QLineSeries *USLseries = new QLineSeries();
-      USLseries->setName("USL");
-      USLseries->setPen(pen);
-      USLseries->setPointLabelsVisible(true);
-      USLseries->setPointLabelsClipping(true);
-      USLseries->setPointLabelsFont(labelFont);
-      USLseries->setPointLabelsFormat("@yPoint");
-      USLseries->append(1, timeValues[1].toDouble());
-      USLseries->append(5, timeValues[1].toDouble());
+     //Upper limit
+     QLineSeries *USLseries = new QLineSeries();
+     USLseries->setName("USL");
+     USLseries->setPen(pen);
+     USLseries->setPointLabelsVisible(true);
+     USLseries->setPointLabelsClipping(false);
+     USLseries->setPointLabelsFont(labelFont);
+     USLseries->setPointLabelsFormat("@yPoint");
+     USLseries->append(1, timeValues[1].toDouble());
+     USLseries->append(5, timeValues[1].toDouble());
 
-      //setting the label of the x axis and the domain.
-      QValueAxis *axisX = new QValueAxis;
-      axisX->setTitleText("Termocouples");
-      axisX->setRange(0, 6);
-      axisX->setTickCount(7);
-      axisX->setLabelFormat("%d");
+     //setting the label of the x axis and the domain.
+     QValueAxis *axisX = new QValueAxis;
+     axisX->setTitleText("Termocouples");
+     axisX->setRange(0, 6);
+     axisX->setTickCount(7);
+     axisX->setLabelFormat("%d");
 
-      // Setting the label of the y axis and the range
-      QValueAxis *axisY = new QValueAxis;
-      axisY->setTitleText("Measurements (sec)");
-      axisY->setMax(120);
-      axisY->setTickCount(5);
-      axisY->setLabelFormat("%.1f");
+     // Setting the label of the y axis and the range
+     QValueAxis *axisY = new QValueAxis;
+     axisY->setTitleText("Measurements (sec)");
+     axisY->setMax(120);
+     axisY->setTickCount(5);
+     axisY->setLabelFormat("%.1f");
 
-      // setting the chart
-      QChart *PSChart = new QChart();
-      PSChart->setTitle("TAL chart");
-      PSChart->legend()->hide();
-      // Adding the LSLseries
-      PSChart->addSeries(LSLseries);
-      PSChart->setAxisX(axisX,LSLseries);
-      PSChart->setAxisY(axisY,LSLseries);
-      // Adding the USLseries
-      PSChart->addSeries(USLseries);
-      PSChart->setAxisX(axisX,USLseries);
-      PSChart->setAxisY(axisY,USLseries);
+     // setting the chart
+     QChart *PSChart = new QChart();
+     PSChart->setTitle("TAL chart");
+     PSChart->legend()->hide();
+     // Adding the LSLseries
+     PSChart->addSeries(LSLseries);
+     PSChart->setAxisX(axisX,LSLseries);
+     PSChart->setAxisY(axisY,LSLseries);
+     // Adding the USLseries
+     PSChart->addSeries(USLseries);
+     PSChart->setAxisX(axisX,USLseries);
+     PSChart->setAxisY(axisY,USLseries);
 
-      // Initializing a chart view so later we can add it and make it visible.
-      QChartView *TALCV = new QChartView(PSChart);
-      TALCV->setRenderHint(QPainter::Antialiasing);
+     // Initializing a chart view so later we can add it and make it visible.
+     QChartView *TALCV = new QChartView(PSChart);
+     TALCV->setRenderHint(QPainter::Antialiasing);
 
-      //creating new table next to the graph.
-      QTableWidget *TALTW = new QTableWidget(5, 6, this);
-      QStringList tableHeadersTitles = {"Termo-\ncouple","TAL","Minimum time\nabove liquid ","Maximum time\nabove liquid","UPCL","LPCL"};
-      TALTW->setHorizontalHeaderLabels(tableHeadersTitles);
-      TALTW->setEditTriggers(QAbstractItemView::NoEditTriggers);
+     //creating new table next to the graph.
+     QTableWidget *TALTW = new QTableWidget(5, 6, this);
+     QStringList tableHeadersTitles = {"Termo-\ncouple","TAL","Minimum time\nabove liquid ","Maximum time\nabove liquid","UPCL","LPCL"};
+     TALTW->setHorizontalHeaderLabels(tableHeadersTitles);
+     TALTW->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
-      QHeaderView *TALVHV = TALTW->verticalHeader();
-      TALVHV->setSectionResizeMode(QHeaderView::Stretch);
-      QHeaderView *TALHHV = TALTW -> horizontalHeader();
-      TALHHV->setSectionResizeMode(QHeaderView::Stretch);
+     QHeaderView *TALVHV = TALTW->verticalHeader();
+     TALVHV->setSectionResizeMode(QHeaderView::Stretch);
+     QHeaderView *TALHHV = TALTW -> horizontalHeader();
+     TALHHV->setSectionResizeMode(QHeaderView::Stretch);
 
-      //Setting the labels for the chart next to the graph.
-      QVBoxLayout *tableLabelLayout = new QVBoxLayout;
-      QLabel *titleLabel = new QLabel;
-      QFont titleFont("Helvetica", 16, QFont::Bold);
-      titleLabel->setFont(titleFont);
-      titleLabel->setText("Reflow Results");
-      titleLabel->setAlignment(Qt::AlignCenter);
+     //Setting the labels for the chart next to the graph.
+     QVBoxLayout *tableLabelLayout = new QVBoxLayout;
+     QLabel *titleLabel = new QLabel;
+     QFont titleFont("Helvetica", 16, QFont::Bold);
+     titleLabel->setFont(titleFont);
+     titleLabel->setText("Reflow Results");
+     titleLabel->setAlignment(Qt::AlignCenter);
 
-      tableLabelLayout->addWidget(titleLabel);
-      tableLabelLayout->addWidget(TALTW);
+     tableLabelLayout->addWidget(titleLabel);
+     tableLabelLayout->addWidget(TALTW);
 
-      //makeWindow();
-      QHBoxLayout *layout = new QHBoxLayout;
-      layout->addWidget(TALCV);
-      layout->addLayout(tableLabelLayout);
+     //makeWindow();
+     QHBoxLayout *layout = new QHBoxLayout;
+     layout->addWidget(TALCV);
+     layout->addLayout(tableLabelLayout);
 
-
-      // Set layout so we can se it in the interface.
-      QWidget *posSlopeWindow = new QWidget();
-      posSlopeWindow->setLayout(layout);
-      posSlopeWindow->setWindowTitle("TAL Results");
-      posSlopeWindow->resize(800,360);
-      posSlopeWindow->show();
-
-
+     // Set layout so we can se it in the interface.
+     QWidget *posSlopeWindow = new QWidget();
+     posSlopeWindow->setLayout(layout);
+     posSlopeWindow->setWindowTitle("TAL Results");
+     posSlopeWindow->resize(800,360);
+     posSlopeWindow->show();
 
 }
 
-
-//Graph showed by clicking PeakTemperature Button
+//Graph and table showed by clicking Peak Temperature Results Button
 void MainWindow::on_peakTempPB_clicked()
 {
     QStringList peakTempValues = getPeakTempValues();
@@ -506,7 +551,7 @@ void MainWindow::on_peakTempPB_clicked()
     QPen pen(Qt::green);
     pen.setWidth(3);
 
-    //Lower limit0
+    //Lower limit
     QLineSeries *LSLseries = new QLineSeries();
     LSLseries->setName("LSL");
     LSLseries->setPen(pen);
@@ -527,6 +572,7 @@ void MainWindow::on_peakTempPB_clicked()
     USLseries->setPointLabelsFormat("@yPoint");
     USLseries->append(1, peakTempValues[1].toDouble());
     USLseries->append(5, peakTempValues[1].toDouble());
+
 
     //setting the label of the x axis and the domain.
     QValueAxis *axisX = new QValueAxis;
@@ -596,8 +642,4 @@ void MainWindow::on_peakTempPB_clicked()
     posSlopeWindow->setWindowTitle("Peak Temperature Results");
     posSlopeWindow->resize(800,360);
     posSlopeWindow->show();
-
-
 }
-
-
