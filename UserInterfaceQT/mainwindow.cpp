@@ -493,6 +493,7 @@ void MainWindow::on_TALPB_clicked()
 
 }
 
+
 //Graph showed by clicking PeakTemperature Button
 void MainWindow::on_peakTempPB_clicked()
 {

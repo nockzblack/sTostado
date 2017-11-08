@@ -23,6 +23,22 @@ private slots:
     void on_selectFilePB_clicked();
 
     void on_solderPasteCB_activated(int index);
+    
+    //Correccion error Windows, declaracion de metodos.
+    QStringList getRiseSlopeValues();
+
+    QStringList getPeakTempValues();
+
+    QStringList getTimeAboveValues();
+
+    void on_positiveSlopePB_clicked();
+    
+    void on_TALPB_clicked();
+    
+    void on_peakTempPB_clicked();
+    
+  
+
 
 
 private:
