@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 
+
+
 namespace Ui {
 class MainWindow;
 }
@@ -22,29 +24,24 @@ private slots:
 
     void on_selectFilePB_clicked();
 
-    void on_solderPasteCB_activated(int index);
-    
-    //Correccion error Windows, declaracion de metodos.
-    QStringList getRiseSlopeValues();
-
-    QStringList getPeakTempValues();
-
-    QStringList getTimeAboveValues();
-
     void on_positiveSlopePB_clicked();
-    
+
     void on_TALPB_clicked();
-    
+
     void on_peakTempPB_clicked();
-    
-  
-
-
 
 private:
     Ui::MainWindow *ui;
 
-    void updateTable(QStringList &value);
+    void updateParametersTW(QStringList &value);
+    void updateTempTW(QStringList &value);
+
+    void setParameterTW(int index);
+
+    QStringList getRiseSlopeValues();
+    QStringList getPeakTempValues();
+    QStringList getTimeAboveValues();
+
 };
 
 #endif // MAINWINDOW_H
