@@ -31,8 +31,8 @@ QStringList static videoAGB = {"Select Model...", "559635-001-00-345", "569695-0
 QStringList static videoME7mil = {"Select Model...", "591400-001-00-345", "593467-001-00-345", "593562-001-00-345", "594707-001-00-345", "594707-002-00-345"};
 QStringList static videoCAP = {"Select Model...","570882-001-00-345", "575621-001-00-345", "550679-001-00-345", "552484-001-00-345", "552508-001-00-345", "546027-001-00-345", "569687-001-00-345"};
 // Dsr Family
-QStringList static dsrLeadFree = {"Select Model...", "598020-002", "598036-002","594834-001","597466-001","596516-001","612181-001"};
-QStringList static dsrLegacyLead = {"Select Model...", "573945-001", "573329-003", "572372-004", "591547-001", "573946-001", "581255-001", "581305-001"};
+QStringList static dsrLeadFree = {"Select Model...", "598020-002-00", "598036-002-00","594834-001-00","597466-001-00","586214-001-00","612181-001-00"};
+QStringList static dsrLegacyLead = {"Select Model...", "573945-001-00", "573329-003-00", "572372-004-00", "591547-001-00", "573946-001-00", "581255-001-00", "581305-002-00", "524697-002-00"};
 // Pics Family
 QStringList static picsGroup_Pics = {"Select Model...", "ARCT03327", "ARCT04573", "ARCT04398", "ARCT03313", "ARCT03753", "ARCT03321", "ARCT02469", "ARCT03745", "ARCT04679", "ARCT04575", "ARCT03323", "ARCT02433", "ARCT03749", "ARCT04399", "ARCT04475"};
 // E6mil Family
