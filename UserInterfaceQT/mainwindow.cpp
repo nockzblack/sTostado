@@ -8,6 +8,7 @@
 #include <QDebug>
 #include <QStringList>
 #include <QTableWidget>
+#include <QPalette>
 
 #include <QChart>
 #include <QtCharts/QChartView>
@@ -41,11 +42,15 @@ QStringList static e6milGroup_E6mil = {"Select Model...", "ARCT03477", "ARCT0330
 
 
 
+
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    //ui->centralWidget->setStyleSheet("background-color: rgb(217,217,217);");
 
     //qDebug() << ui->familyCB->currentText();
 
@@ -642,4 +647,18 @@ void MainWindow::on_peakTempPB_clicked()
     posSlopeWindow->setWindowTitle("Peak Temperature Results");
     posSlopeWindow->resize(800,360);
     posSlopeWindow->show();
+}
+
+void MainWindow::on_cleanPB_clicked()
+{
+    QStringList actualValuesPTW = {"","","","","",""};
+    updateParametersTW(actualValuesPTW);
+
+    QStringList actualValuesTTW = {"","","","","","","","","",""};
+    updateTempTW(actualValuesTTW);
+
+    ui->groupCB->clear();
+    ui->modelCB->clear();
+    ui->familyCB->setCurrentIndex(0);
+    ui->boardSideCB->setCurrentIndex(0);
 }
