@@ -2,15 +2,15 @@ import os
 import PyPDF2
 import sys
 import random
+import shutil
 
+
+w = ""  # """Necessary parameter to run the code. This variable has to be assigned to the specific route of the directory where the thermal profiles are."""
+y = os.getcwd()
+os.chdir(w)
 
 OutPut2 = open("OutPut2.txt", "w")
 Values2 = open("Values2.txt", 'w')
-
-w = ""  # """Necessary parameter to run the code. This variable has to be assigned to the specific route of the directory where the thermal profiles are."""
-
-y = "" # """Necessary parameter to run the code. This variable has to be assigned to the specific route of the directory where our code will be located."""
-os.chdir(w)
 directory = os.listdir(w)
 ruta = str(w)
 
@@ -33,15 +33,12 @@ def ordenar(dirw):
             if i == max(nums):
                 FilesDef.append(FilesName[nums.index(i)])
                 FilesName.remove(FilesName[nums.index(i)])
-                nums.remove(i)  # Se ordenan por fecha de cracion
+                nums.remove(i)
 
 
 ordenar(directory)
-print(FilesDef)
-os.chdir(y)
 
 Warning1 = ""  #"""If the user insert a bigger number than the quantity of the files that are in the directory this warning has to be shown."""
-
 
 def documents(Directory):
     num = int()  # """Necessary parameter to run the code. This variable has to be assigned to the number of thermal profiles that the user wans to analyze."""
@@ -301,7 +298,7 @@ if cont1 == len(conclutions):
     MinPT = 0  # MinimumPeakTemperature
     MaxPT = 0  # MaximumPeakTemperature
 
-    UserElection = ""  # """Necessary parametr to run the code. This variable has to be assigned to the solder paste election of the user"""
+    UserElection = ""  # """Necessary parameter to run the code. This variable has to be assigned to the solder paste election of the user"""
 
     while True:
         if UserElection == SolderPaste1 or UserElection == SolderPaste2:
@@ -379,6 +376,7 @@ if cont1 == len(conclutions):
         else:
             Warning3 = "Too few or too many data for SampleSize"
 
+    Reults2 = open("Results2.txt", 'w')
     def TimeAboveLiquidsCalculation(d2, D3, D4, A2):
         LSL_TAL = MinTAL
         USL_TAL = MaxTAL
@@ -429,6 +427,28 @@ if cont1 == len(conclutions):
         UCLXBar_TAL = (A2 * RBar_TAL) + XBarBar_TAL
         CLXBar_TAL = XBarBar_TAL
         LCLXBar_TAL = XBarBar_TAL - (A2 * RBar_TAL)
+        Results2.write("Cpk_TAL: " + Cpk_TAL)
+        Results2.write("\n")
+        Results2.write("Cpu_TAL: " + Cpu_TAL)
+        Results2.write("\n")
+        Results2.write("LCLR_TAL: " + LCLR_TAL)
+        Results2.write("\n")
+        Results2.write("Cp_TAL: " + Cp_TAL)
+        Results2.write("\n")
+        Results2.write("UCLR_TAL: " + UCLR_TAL)
+        Results2.write("\n")
+        Results2.write("CLR_TAL: " + CLR_TAL)
+        Results2.write("\n")
+        Results2.write("UCLXBar_TAL: " + UCLXBar_TAL)
+        Results2.write("\n")
+        Results2.write("CLXBar_TAL: " + CLXBar_TAL)
+        Results2.write("\n")
+        Results2.write("LCLXBar_TAL: " + LCLXBar_TAL)
+        Results2.write("\n")
+        Results2.write("SigmaHat_TAL: " + SigmaHat_TAL)
+        Results2.write("\n")
+        Results2.write("XBarBar_TAL: " + XBarBar_TAL)
+        Results2.write("\n")
         return Cpk_TAL, Cpu_TAL, LCLR_TAL, Cp_TAL, UCLR_TAL, CLR_TAL, UCLXBar_TAL, CLXBar_TAL, LCLXBar_TAL, SigmaHat_TAL, RBar_TAL, XBarBar_TAL
 
     def PeakTemperatureCalculation(d2, D3, D4, A2):
@@ -467,7 +487,7 @@ if cont1 == len(conclutions):
         Cp_PT = (USL_PT - LSL_PT) / (6 * SigmaHat_PT)
         Cpu_PT = (USL_PT - XBarBar_PT) / (3 * SigmaHat_PT)
         Cpl_PT = (XBarBar_PT - LSL_PT) / (3 * SigmaHat_PT)
-        Cpk_PT = float()  # El valor mas pequeño entre Cpl y Cpu
+        Cpk_PT = float()
         if Cpl_PT < Cpu_PT:
             Cpk_PT = Cpl_PT
         elif Cpl_PT > Cpu_PT:
@@ -477,15 +497,46 @@ if cont1 == len(conclutions):
         UCLXBar_PT = (A2 * RBar_PT) + XBarBar_PT
         CLXBar_PT = XBarBar_PT
         LCLXBar_PT = XBarBar_PT - (A2 * RBar_PT)
+        Results2.write("Cpk_PT: " + Cpk_PT)
+        Results2.write("\n")
+        Results2.write("Cpu_PT: " + Cpu_PT)
+        Results2.write("\n")
+        Results2.write("LCLR_PT: " + LCLR_PT)
+        Results2.write("\n")
+        Results2.write("Cp_PT: " + Cp_PT)
+        Results2.write("\n")
+        Results2.write("UCLR_PT: " + UCLR_PT)
+        Results2.write("\n")
+        Results2.write("CLR_PT: " + CLR_PT)
+        Results2.write("\n")
+        Results2.write("UCLXBar_PT: " + UCLXBar_PT)
+        Results2.write("\n")
+        Results2.write("CLXBar_PT: " + CLXBar_PT)
+        Results2.write("\n")
+        Results2.write("LCLXBar_PT: " + LCLXBar_PT)
+        Results2.write("\n")
+        Results2.write("SigmaHat_PT: " + SigmaHat_PT)
+        Results2.write("\n")
+        Results2.write("XBarBar_PT: " + XBarBar_PT)
+        Results2.write("\n")
         return Cpk_PT, LCLR_PT, Cp_PT, UCLR_PT, CLR_PT, UCLXBar_PT, CLXBar_PT, LCLXBar_PT, SigmaHat_PT, RBar_PT, XBarBar_PT
     Warning3 = ""  # """If the number os samplesize is not in the range 4-10
     # we have to show this warning to the user."""
-
     if UserVariableElection == "Time Above Liquidus":
         TimeAboveLiquidsCalculation(d2, D3, D4, A2)
+        os.chdir(y)
+        if os.path.exists("Results2.txt"):
+            os.remove("Results2.txt")
+        os.chdir(w)
+        shutil.move("Results2.txt")
         # """We have to show all this data to the user on the user nterface."""
     elif UserVariableElection == "Peak Temperature":
         PeakTemperatureCalculation(d2, D3, D4, A2)
+        os.chdir(y)
+        if os.path.exists("Results2.txt"):
+            os.remove("Results2.txt")
+        os.chdir(w)
+        shutil.move("Results2.txt")
         # """We have to show all this data to the user on the user nterface."""
 else:
     Warning2 = "Impossible to calculate. Try to generate the data again."
