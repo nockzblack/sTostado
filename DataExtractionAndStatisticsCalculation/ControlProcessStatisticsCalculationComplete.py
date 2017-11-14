@@ -19,7 +19,7 @@ FilesDef = []
 numDocs = sys.argv[3]  # """Necessary parameter to run the code. This variable has to be assigned to the number of thermal profiles that the user wans to analyze."""
 
 UserElection = sys.argv[4]  # """Necessary parameter to run the code. This variable has to be assigned to the solder paste election of the user"""
-
+print
 nums = []
 
 def ordenar(dirw):
@@ -199,7 +199,7 @@ def FileReadingAndFilter():
     try:
         File = open("Values2.txt")
     except ValueError:
-        print("The file cannot be opened")
+        print("The file cannot be opened", end=" ")
     if File:
         for line in File:
             TimeAboveLiquidsTerms = line.split(" ")
@@ -314,7 +314,7 @@ if cont1 == len(conclutions):
             MaxPT = 255.00
             break
         elif UserElection == SolderPaste4:
-            MinTAL = 30.00
+            MinTAL = 45.00
             MaxTAL = 90.00
             MinPT = 230.00
             MaxPT = 250.00
@@ -425,7 +425,7 @@ if cont1 == len(conclutions):
         UCLXBar_TAL = (A2 * RBar_TAL) + XBarBar_TAL
         CLXBar_TAL = XBarBar_TAL
         LCLXBar_TAL = XBarBar_TAL - (A2 * RBar_TAL)
-        return Cpk_TAL, Cpu_TAL, LCLR_TAL, Cp_TAL, UCLR_TAL, CLR_TAL, UCLXBar_TAL, CLXBar_TAL, LCLXBar_TAL, SigmaHat_TAL, RBar_TAL, XBarBar_TAL
+        return Cpk_TAL, LCLR_TAL, UCLR_TAL, CLR_TAL, UCLXBar_TAL, CLXBar_TAL, LCLXBar_TAL
 
     def PeakTemperatureCalculation(d2, D3, D4, A2):
         XBarW_PT = list()
@@ -473,13 +473,12 @@ if cont1 == len(conclutions):
         UCLXBar_PT = (A2 * RBar_PT) + XBarBar_PT
         CLXBar_PT = XBarBar_PT
         LCLXBar_PT = XBarBar_PT - (A2 * RBar_PT)
-        return Cpk_PT, LCLR_PT, Cp_PT, UCLR_PT, CLR_PT, UCLXBar_PT, CLXBar_PT, LCLXBar_PT, SigmaHat_PT, RBar_PT, XBarBar_PT
-
+        return Cpk_PT, LCLR_PT, UCLR_PT, CLR_PT, UCLXBar_PT, CLXBar_PT, LCLXBar_PT
     DocMessage.close()
     Results2.close()
     nameDocs = ["Results2.txt", "Values2.txt", "OutPut2.txt"]
     if UserVariableElection == "Time Above Liquidus":
-        print(TimeAboveLiquidsCalculation(d2, D3, D4, A2))
+        print(TimeAboveLiquidsCalculation(d2, D3, D4, A2), end=" ")
         for i in nameDocs:
             os.chdir(y)
             if os.path.exists(i):
@@ -488,7 +487,7 @@ if cont1 == len(conclutions):
             shutil.move(i, y)
         # """We have to show all this data to the user on the user nterface."""
     elif UserVariableElection == "Peak Temperature":
-        print(PeakTemperatureCalculation(d2, D3, D4, A2))
+        print(PeakTemperatureCalculation(d2, D3, D4, A2), end=" ")
         for i in nameDocs:
             os.chdir(y)
             if os.path.exists(i):
