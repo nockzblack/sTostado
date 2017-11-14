@@ -1,16 +1,17 @@
 import PyPDF2
 import os
-import shutil
+import sys
 
-DestinyPath = ""  # Necessary parameter to run the code. This variable has to be assigned to the path were is the document that the user want to extract the data of.
+DestinyPath = sys.argv[1] # Necessary parameter to run the code. This variable has to be assigned to the path were is the document that the user want to extract the data of.
+Document = sys.argv[2]  # Necessary parameter to run the code. The code has to recieve the name of the document that the user selected (including the extention .pdf)
+UserSolderPasteElection = sys.argv[3] # Necessary parameter to run the code. This variable has to be assigned to th esolder paste user eletion.
+
 OriginPath = os.getcwd()
 
 os.chdir(DestinyPath)
 
 OutPut = open("OutPuts1.txt", "w")
-Values = open("Thermocouples Values.txt", 'w')
 
-Document = ""  # Necessary parameter to run the code. The code has to recieve the name of the document that the user selected (including the extention .pdf)
 pdfNewFile = open(Document, 'rb')
 pdfReader = PyPDF2.PdfFileReader(pdfNewFile)
 pageObj2 = pdfReader.getPage(1)
@@ -50,8 +51,7 @@ def ValuesPositiveSlope():
         firstPart = PositiveSlopeData[0:point]
         secondPart = PositiveSlopeData[point:end]
         term = firstPart + secondPart
-        Values.write(term)
-        Values.write(" ")
+        print(term)
         PositiveSlopeData = PositiveSlopeData[end:]
     true = OutPut.write("1")
     return true
@@ -75,8 +75,7 @@ def ValuesTimeAboveLiquids():
         firstPart = TimeAboveLiquidsData[0:point]
         secondPart = TimeAboveLiquidsData[point:end]
         term = firstPart + secondPart
-        Values.write(term)
-        Values.write(" ")
+        print(term)
         TimeAboveLiquidsData = TimeAboveLiquidsData[end:]
     true = OutPut.write("1")
     return true
@@ -97,8 +96,7 @@ def ValuesPeakTemperature():
         firstPart = PeakTemperatureData[0:point]
         secondPart = PeakTemperatureData[point:end]
         term = firstPart + secondPart
-        Values.write(term)
-        Values.write(" ")
+        print(term)
         PeakTemperatureData = PeakTemperatureData[end:]
     true = OutPut.write("1")
     return true
@@ -120,8 +118,7 @@ def OvenTemperatureData():
         for i in range(10):
             for j in range(2):
                 GeneralData2.remove(GeneralData2[0])
-            Values.write(GeneralData2[0])
-            Values.write(" ")
+            print(GeneralData2[0])
             GeneralData2.remove(GeneralData2[0])
         return True
     else:
@@ -131,22 +128,24 @@ def OvenTemperatureData():
         for i in range(10):
             for j in range(2):
                 TemperatureData.remove(TemperatureData[0])
-            Values.write(TemperatureData[0])
-            Values.write(" ")
+            print(TemperatureData[0])
             TemperatureData.remove(TemperatureData[0])
         return True
 
-
+print("Values Positive Slope: \n")
 ValuesPositiveSlope()
-Values.write("\n")
+print("\n")
+print("Values Time Above Liquids: \n")
 ValuesTimeAboveLiquids()
-Values.write("\n")
+print("\n")
+print("Values Peak Temperature: \n")
 ValuesPeakTemperature()
-Values.write("\n")
+print("\n")
+print("Oven Temperature Data: \n")
 OvenTemperatureData()
+print("\n")
 
 OutPut.close()
-Values.close()
 pdfNewFile.close()
 
 DocMessage = open("OutPuts1.txt", 'r')
@@ -161,8 +160,6 @@ while cont < len(conclutions):
         cont1 += 1
     cont += 1
 if cont1 == 3:
-    Results = open("Results.txt", 'w')
-    UserSolderPasteElection = ""  # Necessary parameter to run the code. This variable has to be assigned to th esolder paste user eletion.
     SolderPaste1 = "Indium 8.9E Lead free"
     SolderPaste2 = "Indium 5.8LS Lead free"
     SolderPaste3 = "Senju M40-LS720V-Hf"
@@ -201,17 +198,13 @@ if cont1 == 3:
             LPCLTAL = ((MaxTAL - MinTAL) / 4) + MinTAL
             UPCLPT = (((MaxPT - MinPT) / 4) * 3) + MinPT
             LPCLPT = ((MaxPT - MinPT) / 4) + MinPT
-            Results.write("UPCLRS: " + str(UPCLRS))
-            Results.write("\n")
-            Results.write("LPCLRS: " + str(LPCLRS))
-            Results.write("\n")
-            Results.write("UPCLTAL: " + str(UPCLTAL))
-            Results.write("\n")
-            Results.write("LPCLTAL: " + str(LPCLTAL))
-            Results.write("\n")
-            Results.write("UPCLPT: " + str(UPCLPT))
-            Results.write("\n")
-            Results.write("LPCLPT: " + str(LPCLPT))
+            print("Pre control limits: \n")
+            print(UPCLRS)
+            print(LPCLRS)
+            print(UPCLTAL)
+            print(LPCLTAL)
+            print(UPCLPT)
+            print(LPCLPT)
             break
         elif UserSolderPasteElection == SolderPaste3:
             MinRS = 0.8
@@ -228,17 +221,13 @@ if cont1 == 3:
             LPCLTAL = ((MaxTAL - MinTAL) / 4) + MinTAL
             UPCLPT = (((MaxPT - MinPT) / 4) * 3) + MinPT
             LPCLPT = ((MaxPT - MinPT) / 4) + MinPT
-            Results.write("UPCLRS: " + str(UPCLRS))
-            Results.write("\n")
-            Results.write("LPCLRS: " + str(LPCLRS))
-            Results.write("\n")
-            Results.write("UPCLTAL: " + str(UPCLTAL))
-            Results.write("\n")
-            Results.write("LPCLTAL: " + str(LPCLTAL))
-            Results.write("\n")
-            Results.write("UPCLPT: " + str(UPCLPT))
-            Results.write("\n")
-            Results.write("LPCLPT: " + str(LPCLPT))
+            print("Pre control limits: \n")
+            print(UPCLRS)
+            print(LPCLRS)
+            print(UPCLTAL)
+            print(LPCLTAL)
+            print(UPCLPT)
+            print(LPCLPT)
             break
         elif UserSolderPasteElection == SolderPaste4:
             MinRS = 0.8
@@ -255,17 +244,13 @@ if cont1 == 3:
             LPCLTAL = ((MaxTAL - MinTAL) / 4) + MinTAL
             UPCLPT = (((MaxPT - MinPT) / 4) * 3) + MinPT
             LPCLPT = ((MaxPT - MinPT) / 4) + MinPT
-            Results.write("UPCLRS: " + str(UPCLRS))
-            Results.write("\n")
-            Results.write("LPCLRS: " + str(LPCLRS))
-            Results.write("\n")
-            Results.write("UPCLTAL: " + str(UPCLTAL))
-            Results.write("\n")
-            Results.write("LPCLTAL: " + str(LPCLTAL))
-            Results.write("\n")
-            Results.write("UPCLPT: " + str(UPCLPT))
-            Results.write("\n")
-            Results.write("LPCLPT: " + str(LPCLPT))
+            print("Pre control limits: \n")
+            print(UPCLRS)
+            print(LPCLRS)
+            print(UPCLTAL)
+            print(LPCLTAL)
+            print(UPCLPT)
+            print(LPCLPT)
             break
         elif UserSolderPasteElection == SolderPaste5:
             MinRS = 0.5
@@ -282,25 +267,15 @@ if cont1 == 3:
             LPCLTAL = ((MaxTAL - MinTAL) / 4) + MinTAL
             UPCLPT = (((MaxPT - MinPT) / 4) * 3) + MinPT
             LPCLPT = ((MaxPT - MinPT) / 4) + MinPT
-            Results.write(str(UPCLRS))
-            Results.write("UPCLRS: " + str(UPCLRS))
-            Results.write("\n")
-            Results.write("LPCLRS: " + str(LPCLRS))
-            Results.write("\n")
-            Results.write("UPCLTAL: " + str(UPCLTAL))
-            Results.write("\n")
-            Results.write("LPCLTAL: " + str(LPCLTAL))
-            Results.write("\n")
-            Results.write("UPCLPT: " + str(UPCLPT))
-            Results.write("\n")
-            Results.write("LPCLPT: " + str(LPCLPT))
+            print("Pre control limits: \n")
+            print(UPCLRS)
+            print(LPCLRS)
+            print(UPCLTAL)
+            print(LPCLTAL)
+            print(UPCLPT)
+            print(LPCLPT)
             break
-    Results.close()
 else:
     Warning1 = "Impossible to calculate. Try to generate the data again."
-
-os.chdir(OriginPath)
-if os.path.exists("Results.txt"):
-    os.remove("Results.txt")
-os.chdir(DestinyPath)
-shutil.move("Results.txt", OriginPath)
+    print(Warning1)
+    sys.exit()
