@@ -2,9 +2,9 @@ import PyPDF2
 import os
 import sys
 
-DestinyPath = sys.argv[1] # Necessary parameter to run the code. This variable has to be assigned to the path were is the document that the user want to extract the data of.
-Document = sys.argv[2]  # Necessary parameter to run the code. The code has to recieve the name of the document that the user selected (including the extention .pdf)
-UserSolderPasteElection = sys.argv[3] # Necessary parameter to run the code. This variable has to be assigned to th esolder paste user eletion.
+DestinyPath = "/Users/sergio/Documents/Prueba/Prueba2/Prueba3/Prueba4/Prueba5" # Necessary parameter to run the code. This variable has to be assigned to the path were is the document that the user want to extract the data of.
+Document = "arris1.pdf" # Necessary parameter to run the code. The code has to recieve the name of the document that the user selected (including the extention .pdf)
+UserSolderPasteElection = "Indium 8.9E Lead free" # Necessary parameter to run the code. This variable has to be assigned to th esolder paste user eletion.
 
 OriginPath = os.getcwd()
 
@@ -128,7 +128,7 @@ def OvenTemperatureData():
         for i in range(10):
             for j in range(2):
                 TemperatureData.remove(TemperatureData[0])
-            print(TemperatureData[0]=" ")
+            print(TemperatureData[0], end=" ")
             TemperatureData.remove(TemperatureData[0])
         return True
 
