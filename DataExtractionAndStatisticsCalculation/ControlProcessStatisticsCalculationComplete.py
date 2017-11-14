@@ -5,7 +5,7 @@ import random
 import shutil
 
 
-w = ""  # """Necessary parameter to run the code. This variable has to be assigned to the specific route of the directory where the thermal profiles are."""
+w = sys.argv[1]  # """Necessary parameter to run the code. This variable has to be assigned to the specific route of the directory where the thermal profiles are."""
 y = os.getcwd()
 os.chdir(w)
 
@@ -14,11 +14,13 @@ Values2 = open("Values2.txt", 'w')
 directory = os.listdir(w)
 ruta = str(w)
 
-UserVariableElection = "" #"""Necessary parameter to run the code. The user has to choose which variable wants to analyze, either Time Above Liquids or Peak Temperature"""
-
+UserVariableElection = sys.argv[2] #"""Necessary parameter to run the code. The user has to choose which variable wants to analyze, either Time Above Liquids or Peak Temperature"""
 FilesDef = []
-nums = []
+numDocs = sys.argv[3]  # """Necessary parameter to run the code. This variable has to be assigned to the number of thermal profiles that the user wans to analyze."""
 
+UserElection = sys.argv[4]  # """Necessary parameter to run the code. This variable has to be assigned to the solder paste election of the user"""
+
+nums = []
 
 def ordenar(dirw):
     FilesName = []
@@ -40,8 +42,8 @@ ordenar(directory)
 
 Warning1 = ""  #"""If the user insert a bigger number than the quantity of the files that are in the directory this warning has to be shown."""
 
-def documents(Directory):
-    num = int()  # """Necessary parameter to run the code. This variable has to be assigned to the number of thermal profiles that the user wans to analyze."""
+
+def documents(Directory, num):
     if num == len(FilesDef):
         return FilesDef
     elif num < len(FilesDef):
@@ -52,7 +54,7 @@ def documents(Directory):
         sys.exit()   #"""The program will end if the user insert a bigger number than the files quantity on the directory."""
 
 
-for x in documents(FilesDef):
+for x in documents(FilesDef, numDocs):
     pdfNewFile = open(ruta + "/" + x, 'rb')
     pdfReader = PyPDF2.PdfFileReader(pdfNewFile)
     pageObj2 = pdfReader.getPage(1)
@@ -183,7 +185,6 @@ for x in documents(FilesDef):
     Values2.write("\n")
     Values2.write("\n")
 
-
 OutPut2.close()
 Values2.close()
 pdfNewFile.close()
@@ -275,6 +276,8 @@ SampleSizePT = len(PeakTemperatureMatrixDef[0])
 SampleSizeTAL = len(TimeAboveLiquidsMatrixDef[0])
 
 Warning2 = ""  # """If there was an error generating the thermal profiles data this warning has to be shown to the user."""
+Warning3 = ""  # """If the number os samplesize is not in the range 4-10
+# we have to show this warning to the user."""
 
 DocMessage = open("OutPut2.txt", 'r')
 message = DocMessage.read()
@@ -292,14 +295,11 @@ if cont1 == len(conclutions):
     SolderPaste2 = "Indium 5.8LS Lead free"
     SolderPaste3 = "Senju M40-LS720V-Hf"
     SolderPaste4 = "Alpha OM 338 PT"
-    SolderPaste5 = "Indium SMQ98H (Sn63Pb37)"
+    SolderPaste5 = "Indium SMQ92H (Sn63Pb37)"
     MinTAL = 0  # MinimumTimeAboveLiquids
     MaxTAL = 0  # MaximumTimeAboveLiquids
     MinPT = 0  # MinimumPeakTemperature
     MaxPT = 0  # MaximumPeakTemperature
-
-    UserElection = ""  # """Necessary parameter to run the code. This variable has to be assigned to the solder paste election of the user"""
-
     while True:
         if UserElection == SolderPaste1 or UserElection == SolderPaste2:
             MinTAL = 30.00
@@ -375,8 +375,8 @@ if cont1 == len(conclutions):
             break
         else:
             Warning3 = "Too few or too many data for SampleSize"
+    Results2 = open("Results2.txt", 'w')
 
-    Reults2 = open("Results2.txt", 'w')
     def TimeAboveLiquidsCalculation(d2, D3, D4, A2):
         LSL_TAL = MinTAL
         USL_TAL = MaxTAL
@@ -391,7 +391,6 @@ if cont1 == len(conclutions):
             ProfileResult = ProfileResult / len(Profile)
             XBarW_TAL.append(ProfileResult)
             cont += 1
-        print(XBarW_TAL)
         RBar_TAL = float()  # Promedio de todas las R.
         cont1 = 0
         RW_TAL = list()
@@ -403,7 +402,6 @@ if cont1 == len(conclutions):
         for i in RW_TAL:
             i = float(i)
             RBar_TAL += i
-        print(RW_TAL)
         RealLenght = len(TimeAboveLiquidsMatrixDef)
         RBar_TAL = (RBar_TAL / RealLenght)
         XBarBar_TAL = float()  # Promedio de todas las XBar.
@@ -427,28 +425,6 @@ if cont1 == len(conclutions):
         UCLXBar_TAL = (A2 * RBar_TAL) + XBarBar_TAL
         CLXBar_TAL = XBarBar_TAL
         LCLXBar_TAL = XBarBar_TAL - (A2 * RBar_TAL)
-        Results2.write("Cpk_TAL: " + Cpk_TAL)
-        Results2.write("\n")
-        Results2.write("Cpu_TAL: " + Cpu_TAL)
-        Results2.write("\n")
-        Results2.write("LCLR_TAL: " + LCLR_TAL)
-        Results2.write("\n")
-        Results2.write("Cp_TAL: " + Cp_TAL)
-        Results2.write("\n")
-        Results2.write("UCLR_TAL: " + UCLR_TAL)
-        Results2.write("\n")
-        Results2.write("CLR_TAL: " + CLR_TAL)
-        Results2.write("\n")
-        Results2.write("UCLXBar_TAL: " + UCLXBar_TAL)
-        Results2.write("\n")
-        Results2.write("CLXBar_TAL: " + CLXBar_TAL)
-        Results2.write("\n")
-        Results2.write("LCLXBar_TAL: " + LCLXBar_TAL)
-        Results2.write("\n")
-        Results2.write("SigmaHat_TAL: " + SigmaHat_TAL)
-        Results2.write("\n")
-        Results2.write("XBarBar_TAL: " + XBarBar_TAL)
-        Results2.write("\n")
         return Cpk_TAL, Cpu_TAL, LCLR_TAL, Cp_TAL, UCLR_TAL, CLR_TAL, UCLXBar_TAL, CLXBar_TAL, LCLXBar_TAL, SigmaHat_TAL, RBar_TAL, XBarBar_TAL
 
     def PeakTemperatureCalculation(d2, D3, D4, A2):
@@ -497,46 +473,28 @@ if cont1 == len(conclutions):
         UCLXBar_PT = (A2 * RBar_PT) + XBarBar_PT
         CLXBar_PT = XBarBar_PT
         LCLXBar_PT = XBarBar_PT - (A2 * RBar_PT)
-        Results2.write("Cpk_PT: " + Cpk_PT)
-        Results2.write("\n")
-        Results2.write("Cpu_PT: " + Cpu_PT)
-        Results2.write("\n")
-        Results2.write("LCLR_PT: " + LCLR_PT)
-        Results2.write("\n")
-        Results2.write("Cp_PT: " + Cp_PT)
-        Results2.write("\n")
-        Results2.write("UCLR_PT: " + UCLR_PT)
-        Results2.write("\n")
-        Results2.write("CLR_PT: " + CLR_PT)
-        Results2.write("\n")
-        Results2.write("UCLXBar_PT: " + UCLXBar_PT)
-        Results2.write("\n")
-        Results2.write("CLXBar_PT: " + CLXBar_PT)
-        Results2.write("\n")
-        Results2.write("LCLXBar_PT: " + LCLXBar_PT)
-        Results2.write("\n")
-        Results2.write("SigmaHat_PT: " + SigmaHat_PT)
-        Results2.write("\n")
-        Results2.write("XBarBar_PT: " + XBarBar_PT)
-        Results2.write("\n")
         return Cpk_PT, LCLR_PT, Cp_PT, UCLR_PT, CLR_PT, UCLXBar_PT, CLXBar_PT, LCLXBar_PT, SigmaHat_PT, RBar_PT, XBarBar_PT
-    Warning3 = ""  # """If the number os samplesize is not in the range 4-10
-    # we have to show this warning to the user."""
+
+    DocMessage.close()
+    Results2.close()
+    nameDocs = ["Results2.txt", "Values2.txt", "OutPut2.txt"]
     if UserVariableElection == "Time Above Liquidus":
-        TimeAboveLiquidsCalculation(d2, D3, D4, A2)
-        os.chdir(y)
-        if os.path.exists("Results2.txt"):
-            os.remove("Results2.txt")
-        os.chdir(w)
-        shutil.move("Results2.txt")
+        print(TimeAboveLiquidsCalculation(d2, D3, D4, A2))
+        for i in nameDocs:
+            os.chdir(y)
+            if os.path.exists(i):
+                os.remove(i)
+            os.chdir(w)
+            shutil.move(i, y)
         # """We have to show all this data to the user on the user nterface."""
     elif UserVariableElection == "Peak Temperature":
-        PeakTemperatureCalculation(d2, D3, D4, A2)
-        os.chdir(y)
-        if os.path.exists("Results2.txt"):
-            os.remove("Results2.txt")
-        os.chdir(w)
-        shutil.move("Results2.txt")
+        print(PeakTemperatureCalculation(d2, D3, D4, A2))
+        for i in nameDocs:
+            os.chdir(y)
+            if os.path.exists(i):
+                os.remove(i)
+            os.chdir(w)
+            shutil.move(i, y)
         # """We have to show all this data to the user on the user nterface."""
 else:
     Warning2 = "Impossible to calculate. Try to generate the data again."
