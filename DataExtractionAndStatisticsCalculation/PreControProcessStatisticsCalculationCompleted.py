@@ -51,7 +51,7 @@ def ValuesPositiveSlope():
         firstPart = PositiveSlopeData[0:point]
         secondPart = PositiveSlopeData[point:end]
         term = firstPart + secondPart
-        print(term)
+        print(term, end=" ")
         PositiveSlopeData = PositiveSlopeData[end:]
     true = OutPut.write("1")
     return true
@@ -75,12 +75,12 @@ def ValuesTimeAboveLiquids():
         firstPart = TimeAboveLiquidsData[0:point]
         secondPart = TimeAboveLiquidsData[point:end]
         term = firstPart + secondPart
-        print(term)
+        print(term, end=" ")
         TimeAboveLiquidsData = TimeAboveLiquidsData[end:]
     true = OutPut.write("1")
     return true
 
-
+print
 def ValuesPeakTemperature():
     PeakTemperatureData = ""
     PeakTemperature = toWork[index_PeakTemperature:index_Variable]
@@ -96,7 +96,7 @@ def ValuesPeakTemperature():
         firstPart = PeakTemperatureData[0:point]
         secondPart = PeakTemperatureData[point:end]
         term = firstPart + secondPart
-        print(term)
+        print(term, end=" ")
         PeakTemperatureData = PeakTemperatureData[end:]
     true = OutPut.write("1")
     return true
@@ -118,7 +118,7 @@ def OvenTemperatureData():
         for i in range(10):
             for j in range(2):
                 GeneralData2.remove(GeneralData2[0])
-            print(GeneralData2[0])
+            print(GeneralData2[0], end=" ")
             GeneralData2.remove(GeneralData2[0])
         return True
     else:
@@ -128,22 +128,21 @@ def OvenTemperatureData():
         for i in range(10):
             for j in range(2):
                 TemperatureData.remove(TemperatureData[0])
-            print(TemperatureData[0])
+            print(TemperatureData[0]=" ")
             TemperatureData.remove(TemperatureData[0])
         return True
 
-print("Values Positive Slope: \n")
+print("Values Positive Slope:", end=" ")
 ValuesPositiveSlope()
 print("\n")
-print("Values Time Above Liquids: \n")
+print("Values Time Above Liquids:", end=" ")
 ValuesTimeAboveLiquids()
 print("\n")
-print("Values Peak Temperature: \n")
+print("Values Peak Temperature:", end=" ")
 ValuesPeakTemperature()
 print("\n")
-print("Oven Temperature Data: \n")
+print("Oven Temperature Data:", end=" ")
 OvenTemperatureData()
-print("\n")
 
 OutPut.close()
 pdfNewFile.close()
@@ -198,7 +197,7 @@ if cont1 == 3:
             LPCLTAL = ((MaxTAL - MinTAL) / 4) + MinTAL
             UPCLPT = (((MaxPT - MinPT) / 4) * 3) + MinPT
             LPCLPT = ((MaxPT - MinPT) / 4) + MinPT
-            print("Pre control limits: \n")
+            print("Pre control limits:", end=" ")
             print(UPCLRS)
             print(LPCLRS)
             print(UPCLTAL)
@@ -221,7 +220,7 @@ if cont1 == 3:
             LPCLTAL = ((MaxTAL - MinTAL) / 4) + MinTAL
             UPCLPT = (((MaxPT - MinPT) / 4) * 3) + MinPT
             LPCLPT = ((MaxPT - MinPT) / 4) + MinPT
-            print("Pre control limits: \n")
+            print("Pre control limits:", end=" ")
             print(UPCLRS)
             print(LPCLRS)
             print(UPCLTAL)
@@ -230,9 +229,9 @@ if cont1 == 3:
             print(LPCLPT)
             break
         elif UserSolderPasteElection == SolderPaste4:
-            MinRS = 0.8
-            MaxRS = 1.5
-            MinTAL = 30.00
+            MinRS = 0.5
+            MaxRS = 3.0
+            MinTAL = 45.00
             MaxTAL = 90.00
             MinPT = 230.00
             MaxPT = 250.00
@@ -244,7 +243,7 @@ if cont1 == 3:
             LPCLTAL = ((MaxTAL - MinTAL) / 4) + MinTAL
             UPCLPT = (((MaxPT - MinPT) / 4) * 3) + MinPT
             LPCLPT = ((MaxPT - MinPT) / 4) + MinPT
-            print("Pre control limits: \n")
+            print("Pre control limits:", end=" ")
             print(UPCLRS)
             print(LPCLRS)
             print(UPCLTAL)
@@ -267,7 +266,7 @@ if cont1 == 3:
             LPCLTAL = ((MaxTAL - MinTAL) / 4) + MinTAL
             UPCLPT = (((MaxPT - MinPT) / 4) * 3) + MinPT
             LPCLPT = ((MaxPT - MinPT) / 4) + MinPT
-            print("Pre control limits: \n")
+            print("Pre control limits:", end=" ")
             print(UPCLRS)
             print(LPCLRS)
             print(UPCLTAL)
@@ -277,5 +276,5 @@ if cont1 == 3:
             break
 else:
     Warning1 = "Impossible to calculate. Try to generate the data again."
-    print(Warning1)
+    print(Warning1, end=" ")
     sys.exit()
