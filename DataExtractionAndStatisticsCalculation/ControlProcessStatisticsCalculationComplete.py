@@ -5,21 +5,20 @@ import random
 import shutil
 
 
-w = sys.argv[1]  # """Necessary parameter to run the code. This variable has to be assigned to the specific route of the directory where the thermal profiles are."""
-y = os.getcwd()
-os.chdir(w)
+DestinyPath = sys.argv[1]  # """Necessary parameter to run the code. This variable has to be assigned to the specific route of the directory where the thermal profiles are."""
+OriginPath = os.getcwd()
+os.chdir(DestinyPath)
 
 OutPut2 = open("OutPut2.txt", "w")
 Values2 = open("Values2.txt", 'w')
-directory = os.listdir(w)
-ruta = str(w)
+directory = os.listdir(DestinyPath)
+ruta = str(DestinyPath)
 
 UserVariableElection = sys.argv[2] #"""Necessary parameter to run the code. The user has to choose which variable wants to analyze, either Time Above Liquids or Peak Temperature"""
 FilesDef = []
 numDocs = sys.argv[3]  # """Necessary parameter to run the code. This variable has to be assigned to the number of thermal profiles that the user wans to analyze."""
 
 UserElection = sys.argv[4]  # """Necessary parameter to run the code. This variable has to be assigned to the solder paste election of the user"""
-print
 nums = []
 
 def ordenar(dirw):
@@ -480,20 +479,20 @@ if cont1 == len(conclutions):
     if UserVariableElection == "Time Above Liquidus":
         print(TimeAboveLiquidsCalculation(d2, D3, D4, A2), end=" ")
         for i in nameDocs:
-            os.chdir(y)
+            os.chdir(OriginPath)
             if os.path.exists(i):
                 os.remove(i)
-            os.chdir(w)
-            shutil.move(i, y)
+            os.chdir(DestinyPath)
+            shutil.move(i, OriginPath)
         # """We have to show all this data to the user on the user nterface."""
     elif UserVariableElection == "Peak Temperature":
         print(PeakTemperatureCalculation(d2, D3, D4, A2), end=" ")
         for i in nameDocs:
-            os.chdir(y)
+            os.chdir(OriginPath)
             if os.path.exists(i):
                 os.remove(i)
-            os.chdir(w)
-            shutil.move(i, y)
+            os.chdir(DestinyPath)
+            shutil.move(i, OriginPath)
         # """We have to show all this data to the user on the user nterface."""
 else:
     Warning2 = "Impossible to calculate. Try to generate the data again."
