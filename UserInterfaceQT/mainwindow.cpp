@@ -19,6 +19,8 @@ QT_CHARTS_USE_NAMESPACE
 
 int static familyIndex;
 
+int static familyIndexControl;
+
 // Types of Groups
 QStringList static videoFamily = {"Select Group...","Rockstar","AGB","CAP","ME7mil"};
 QStringList static dsrFamily = {"Select Group...","Lead_free","Legacy_lead"};
@@ -42,8 +44,6 @@ QStringList static e6milGroup_E6mil = {"Select Model...", "ARCT03477", "ARCT0330
 
 
 
-
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -54,35 +54,63 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //qDebug() << ui->familyCB->currentText();
 
+    // Set default values and properties to precontrol tables widgets
+    setDefaultParametersTW();
+    setDefaultTempTW();
+    // Set default values and properties to control tables widgets
+    setDefaultParametersTWC();
 
-
-    // Set default values and properties to parameters TW
-    QHeaderView *header = ui->parametersTW ->horizontalHeader();
-    header->setSectionResizeMode(QHeaderView::Stretch);
-    QHeaderView *OtherHeader = ui->parametersTW ->verticalHeader();
-    OtherHeader->setSectionResizeMode(QHeaderView::Stretch);
-    ui->parametersTW->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    QStringList actualValuesPTW = {"","","","","",""};
-    updateParametersTW(actualValuesPTW);
-
-    // Set default values and properties to parameters TW
-    QHeaderView *tempHorHeader = ui->tempTW->horizontalHeader();
-    tempHorHeader->setSectionResizeMode(QHeaderView::Stretch);
-    QHeaderView *tempVerHeader = ui->tempTW ->verticalHeader();
-    tempVerHeader->setSectionResizeMode(QHeaderView::Stretch);
-    ui->tempTW->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    QStringList actualValuesTTW = {"","","","","","","","","",""};
-    updateTempTW(actualValuesTTW);
-
-    // Set solder paste combox box unenable because this is selected automatically
+    // Set solder paste combox boxes unenabled because this is selected automatically
     ui->solderPasteCB->setEnabled(false);
+    ui->solderPasteCBC->setEnabled(false);
+
+    //ui->controlTabW->
 
 }
+
 
 MainWindow::~MainWindow()
 {
     delete ui;
 }
+
+
+
+void MainWindow::setDefaultParametersTW() {
+    // Set default values and properties to parameters TW on preControl tab
+    QHeaderView *parameterHorHeader = ui->parametersTW ->horizontalHeader();
+    parameterHorHeader->setSectionResizeMode(QHeaderView::Stretch);
+    QHeaderView *parametersVerHeader = ui->parametersTW ->verticalHeader();
+    parametersVerHeader->setSectionResizeMode(QHeaderView::Stretch);
+    ui->parametersTW->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    QStringList defaultlValuesPTW = {"","","","","",""};
+    updateParametersTW(defaultlValuesPTW);
+}
+
+
+void MainWindow::setDefaultParametersTWC() {
+    // Set default values and properties to parameters TW on control tab
+    QHeaderView *parametersControlHorHeader = ui->parametersTWC->horizontalHeader();
+    parametersControlHorHeader->setSectionResizeMode(QHeaderView::Stretch);
+    QHeaderView *parametersControlVerHeader = ui->parametersTWC->verticalHeader();
+    parametersControlVerHeader->setSectionResizeMode(QHeaderView::Stretch);
+    ui->parametersTWC->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    QStringList defaultValuesPTWC = {"","","",""};
+    updateParametersTWC(defaultValuesPTWC);
+}
+
+
+void MainWindow::setDefaultTempTW() {
+    // Set default values and properties to temperature TW on preControl tab
+    QHeaderView *tempHorHeader = ui->tempTW->horizontalHeader();
+    tempHorHeader->setSectionResizeMode(QHeaderView::Stretch);
+    QHeaderView *tempVerHeader = ui->tempTW ->verticalHeader();
+    tempVerHeader->setSectionResizeMode(QHeaderView::Stretch);
+    ui->tempTW->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    QStringList defaultValuesTTW = {"","","","","","","","","",""};
+    updateTempTW(defaultValuesTTW);
+}
+
 
 
 void MainWindow::on_familyCB_activated(int index)
@@ -231,6 +259,7 @@ void MainWindow::on_selectFilePB_clicked()
 }
 
 
+
 void MainWindow::setParameterTW(int index)
 {
     /*
@@ -283,6 +312,7 @@ void MainWindow::setParameterTW(int index)
 
 
 
+
 void MainWindow::updateParametersTW(QStringList &values) {
 
     // This just create new items with the information on the list values and
@@ -293,6 +323,7 @@ void MainWindow::updateParametersTW(QStringList &values) {
         ui->parametersTW->setItem(0,i, auxCellTWI);
     }
 }
+
 
 void MainWindow::updateTempTW(QStringList &values) {
 
@@ -305,6 +336,8 @@ void MainWindow::updateTempTW(QStringList &values) {
     }
 }
 
+
+
 QStringList MainWindow::getRiseSlopeValues() {
 
     //qDebug() << ui->parametersTW->item(4,0)->text();
@@ -315,6 +348,7 @@ QStringList MainWindow::getRiseSlopeValues() {
 
     return riseValues;
 }
+
 
 QStringList MainWindow::getPeakTempValues() {
 
@@ -335,6 +369,8 @@ QStringList MainWindow::getTimeAboveValues() {
 
     return timeValues;
 }
+
+
 
 
 //Graph and table showed by clicking Positive Slopes Results Button
@@ -661,4 +697,227 @@ void MainWindow::on_cleanPB_clicked()
     ui->modelCB->clear();
     ui->familyCB->setCurrentIndex(0);
     ui->boardSideCB->setCurrentIndex(0);
+    ui->productionLineCB->setCurrentIndex(0);
 }
+
+
+
+/* **************************************************
+ * Start the code for the control UI part
+ *
+ */
+
+void MainWindow::updateParametersTWC(QStringList &values) {
+
+    // This just create new items with the information on the list values and
+    // put it into the table.
+    for (int i = 0; i<4; i++) {
+        QTableWidgetItem  *auxCellTWI = new QTableWidgetItem(values[i]);
+        auxCellTWI->setTextAlignment(Qt::AlignCenter);
+        ui->parametersTWC->setItem(0,i, auxCellTWI);
+    }
+}
+
+
+void MainWindow::updateHeaderParametersTWC(int index) {
+
+    for (int i = 0; i<10; i++) {
+        //ui.tableWidgetTextureLibrary->setHorizontalHeaderItem(0, new QTableWidgetItem("Prueba"));
+        //ui.tableWidgetTextureLibrary->horizontalHeaderItem(0)->setText("Whatever");
+
+        //QString value = QString::number(i);
+        //QTableWidgetItem  *auxCellTWI = new QTableWidgetItem(value);
+        //auxCellTWI->setTextAlignment(Qt::AlignCenter);
+
+        if (i < index) {
+            ui->profilesTWC->setRowHidden(i, false);
+        } else {
+            ui->profilesTWC->setRowHidden(i, true);
+        }
+
+        //qDebug() << auxCellTWI->text();
+        //ui->profilesTWC->verticalHeaderItem(i)->setText(value);
+    }
+}
+
+
+void MainWindow::on_familyCBC_activated(int index)
+{
+    /*
+     * When the family on control Tab combo box is clicked it is cleanead the group and model
+     * combo box... The index that the user choose is assigned to the family index var
+     * in order to add the correct items on the other combo boxes.
+     *
+     */
+
+    ui->groupCBC->clear();
+    ui->modelCBC->clear();
+
+    switch (index) {
+
+        case(1):
+            ui->groupCBC->addItems(videoFamily);
+            familyIndexControl = index;
+        break;
+
+        case(2):
+            ui->groupCBC->addItems(dsrFamily);
+            familyIndexControl = index;
+        break;
+
+        case(3):
+            ui->groupCBC->addItems(picsFamily);
+            familyIndexControl = index;
+        break;
+
+        case(4):
+            ui->groupCBC->addItems(e6milFamily);
+            familyIndexControl = index;
+        break;
+    }
+}
+
+
+
+void MainWindow::on_groupCBC_activated(int index)
+{
+    /*
+     * When the family combo box is clicked it is cleanead the model
+     * combo box... The index that the user choose and with the family Index var value
+     * it is added the right items on the model combo box
+     *
+     */
+
+    ui->modelCBC->clear();
+
+    switch (familyIndexControl) {
+
+    case(1):
+        if (index == 1) {
+            ui->modelCBC->addItems(videoRockstar);
+            setParameterTWC(1);
+            ui->solderPasteCBC->setCurrentIndex(1);
+
+        } else if (index == 2) {
+            ui->modelCBC->addItems(videoAGB);
+            setParameterTWC(1);
+            ui->solderPasteCBC->setCurrentIndex(1);
+
+        } else if (index == 3) {
+            ui->modelCBC->addItems(videoME7mil);
+            setParameterTWC(2);
+            ui->solderPasteCBC->setCurrentIndex(2);
+
+        }else if (index == 4) {
+            ui->modelCBC->addItems(videoCAP);
+            setParameterTWC(1);
+            ui->solderPasteCBC->setCurrentIndex(1);
+        }
+        break;
+
+    case(2):
+        if (index == 1){
+            ui->modelCBC->addItems(dsrLeadFree);
+            setParameterTWC(2);
+            ui->solderPasteCBC->setCurrentIndex(2);
+
+        } else if (index==2){
+            ui->modelCBC->addItems(dsrLegacyLead);
+            setParameterTWC(5);
+            ui->solderPasteCBC->setCurrentIndex(5);
+        }
+       break;
+
+    case(3):
+        if (index == 1){
+            ui->modelCBC->addItems(picsGroup_Pics);
+            setParameterTWC(3);
+            ui->solderPasteCBC->setCurrentIndex(3);
+        }
+        break;
+    case(4):
+        if (index == 1){
+            ui->modelCBC->addItems(e6milGroup_E6mil);
+            setParameterTWC(4);
+            ui->solderPasteCBC->setCurrentIndex(4);
+        }
+        break;
+    }
+}
+
+
+void MainWindow::on_profileCBC_activated(int index)
+{
+    //QString value = ui->profileCBC->currentText();
+    if (index == 0) {
+        updateHeaderParametersTWC(10);
+    } else {
+        updateHeaderParametersTWC(index + 3);
+    }
+}
+
+
+
+void MainWindow::setParameterTWC(int index)
+{
+    /*
+     * When the solder paste combo box change it is updated the values on the
+     * acceptable parameter table widget, these values depens on the index that
+     * it is clicked.
+     *
+     *
+     */
+
+    switch(index) {
+        case 1:
+        {
+            QStringList actualValues = {"30","100","230","262"};
+            updateParametersTWC(actualValues);
+        }
+        break;
+
+
+        case 2:
+        {
+            QStringList actualValues = {"30","100","230","262"};
+            updateParametersTWC(actualValues);
+         }
+        break;
+
+        case 3:
+        {
+            QStringList actualValues = {"30","90","232","255"};
+            updateParametersTWC(actualValues);
+         }
+        break;
+
+        case 4:
+        {
+            QStringList actualValues = {"30","90","230","250"};
+            updateParametersTWC(actualValues);
+         }
+        break;
+
+        case 5:
+        {
+            QStringList actualValues = {"30","90","208","228"};
+            updateParametersTWC(actualValues);
+         }
+        break;
+    }
+}
+
+void MainWindow::on_cleanPBC_clicked()
+{
+    QStringList actualValuesPTWC = {"","","","","",""};
+    updateParametersTWC(actualValuesPTWC);
+
+
+    ui->groupCBC->clear();
+    ui->modelCBC->clear();
+    ui->familyCBC->setCurrentIndex(0);
+    ui->boardSideCBC->setCurrentIndex(0);
+    ui->productionLineCBC->setCurrentIndex(0);
+    ui->profileCBC->setCurrentIndex(0);
+}
+
