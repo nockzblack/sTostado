@@ -40,6 +40,10 @@ private slots:
 
 
     void on_cleanPBC_clicked();
+    
+    void on_TALPBC_clicked();
+    
+    void on_peakTempPBC_clicked();
 
 private:
     Ui::MainWindow *ui;
