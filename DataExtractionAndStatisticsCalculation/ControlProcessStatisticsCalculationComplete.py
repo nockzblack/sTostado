@@ -52,7 +52,7 @@ def documents(Directory, num):
         sys.exit()   #"""The program will end if the user insert a bigger number than the files quantity on the directory."""
 
 
-for x in documents(FilesDef, numDocs):
+for x in documents(FilesDef, int(numDocs)):
     pdfNewFile = open(ruta + "/" + x, 'rb')
     pdfReader = PyPDF2.PdfFileReader(pdfNewFile)
     pageObj2 = pdfReader.getPage(1)
