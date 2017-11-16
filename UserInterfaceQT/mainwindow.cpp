@@ -9,6 +9,8 @@
 #include <QStringList>
 #include <QTableWidget>
 #include <QPalette>
+#include <QProcess>
+#include <QFileInfo>
 
 #include <QChart>
 #include <QtCharts/QChartView>
@@ -18,6 +20,8 @@
 QT_CHARTS_USE_NAMESPACE
 
 int static familyIndex;
+
+int static familyIndexControl;
 
 // Types of Groups
 QStringList static videoFamily = {"Select Group...","Rockstar","AGB","CAP","ME7mil"};
@@ -42,8 +46,6 @@ QStringList static e6milGroup_E6mil = {"Select Model...", "ARCT03477", "ARCT0330
 
 
 
-
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -54,35 +56,63 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //qDebug() << ui->familyCB->currentText();
 
+    // Set default values and properties to precontrol tables widgets
+    setDefaultParametersTW();
+    setDefaultTempTW();
+    // Set default values and properties to control tables widgets
+    setDefaultParametersTWC();
 
-
-    // Set default values and properties to parameters TW
-    QHeaderView *header = ui->parametersTW ->horizontalHeader();
-    header->setSectionResizeMode(QHeaderView::Stretch);
-    QHeaderView *OtherHeader = ui->parametersTW ->verticalHeader();
-    OtherHeader->setSectionResizeMode(QHeaderView::Stretch);
-    ui->parametersTW->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    QStringList actualValuesPTW = {"","","","","",""};
-    updateParametersTW(actualValuesPTW);
-
-    // Set default values and properties to parameters TW
-    QHeaderView *tempHorHeader = ui->tempTW->horizontalHeader();
-    tempHorHeader->setSectionResizeMode(QHeaderView::Stretch);
-    QHeaderView *tempVerHeader = ui->tempTW ->verticalHeader();
-    tempVerHeader->setSectionResizeMode(QHeaderView::Stretch);
-    ui->tempTW->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    QStringList actualValuesTTW = {"","","","","","","","","",""};
-    updateTempTW(actualValuesTTW);
-
-    // Set solder paste combox box unenable because this is selected automatically
+    // Set solder paste combox boxes unenabled because this is selected automatically
     ui->solderPasteCB->setEnabled(false);
+    ui->solderPasteCBC->setEnabled(false);
+
+    //ui->controlTabW->
 
 }
+
 
 MainWindow::~MainWindow()
 {
     delete ui;
 }
+
+
+
+void MainWindow::setDefaultParametersTW() {
+    // Set default values and properties to parameters TW on preControl tab
+    QHeaderView *parameterHorHeader = ui->parametersTW ->horizontalHeader();
+    parameterHorHeader->setSectionResizeMode(QHeaderView::Stretch);
+    QHeaderView *parametersVerHeader = ui->parametersTW ->verticalHeader();
+    parametersVerHeader->setSectionResizeMode(QHeaderView::Stretch);
+    ui->parametersTW->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    QStringList defaultlValuesPTW = {"","","","","",""};
+    updateParametersTW(defaultlValuesPTW);
+}
+
+
+void MainWindow::setDefaultParametersTWC() {
+    // Set default values and properties to parameters TW on control tab
+    QHeaderView *parametersControlHorHeader = ui->parametersTWC->horizontalHeader();
+    parametersControlHorHeader->setSectionResizeMode(QHeaderView::Stretch);
+    QHeaderView *parametersControlVerHeader = ui->parametersTWC->verticalHeader();
+    parametersControlVerHeader->setSectionResizeMode(QHeaderView::Stretch);
+    ui->parametersTWC->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    QStringList defaultValuesPTWC = {"","","",""};
+    updateParametersTWC(defaultValuesPTWC);
+}
+
+
+void MainWindow::setDefaultTempTW() {
+    // Set default values and properties to temperature TW on preControl tab
+    QHeaderView *tempHorHeader = ui->tempTW->horizontalHeader();
+    tempHorHeader->setSectionResizeMode(QHeaderView::Stretch);
+    QHeaderView *tempVerHeader = ui->tempTW ->verticalHeader();
+    tempVerHeader->setSectionResizeMode(QHeaderView::Stretch);
+    ui->tempTW->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    QStringList defaultValuesTTW = {"","","","","","","","","",""};
+    updateTempTW(defaultValuesTTW);
+}
+
 
 
 void MainWindow::on_familyCB_activated(int index)
@@ -200,10 +230,105 @@ void MainWindow::on_selectFilePB_clicked()
     QString fileName = QFileDialog::getOpenFileName(this,
         tr("Jajaja"), "/Users/Fer/Downloads",
         tr("All Files (*)"));
+    //Obtencion de parametros necesarios para el codigo python.
+    QString Name = QFileInfo(fileName).fileName();
+    QFileInfo  info(fileName);
+    QString correctfileName = info.path();
+    correctfileName.remove(0,2);
+
+    QString paste = ui->solderPasteCB->currentText();
 
     if (fileName.isEmpty())
             return;
         else {
+            //Codigo necesario para utilizar script python.
+            qDebug() << correctfileName;
+            qDebug() << Name;
+            qDebug() << paste;
+            QDir dir("C:/Users/Oliver y Ale/Desktop/sTostado-master/DAtaExtractionAndStatisticsCalculation");
+            //se obtiene el path de donde esta ubicada la aplicacion si se ponen los scripts python en el mismo lugar funciona,
+            QString dir1(QCoreApplication::applicationDirPath ());
+            QFileInfo info(dir1, "PreControProcessStatisticsCalculationCompleted.py");
+            qDebug() << dir.exists() << info.exists();
+            QProcess process;
+            process.setProcessChannelMode(QProcess::MergedChannels);
+            process.start("python.exe", QStringList()<< info.absoluteFilePath() << correctfileName << Name << paste);
+            qDebug() << process.atEnd();
+            process.waitForFinished(-1);
+            QString output(process.readAll());
+            
+            //Obtencion de datos del output del script python.
+            int indexTempData = output.indexOf("Temperature Data: ",1);
+            QString TempData = output.mid(indexTempData,68);
+            QString TempData1 = TempData.mid(18,4);
+            QString TempData2 = TempData.mid(23,4);
+            QString TempData3 = TempData.mid(28,4);
+            QString TempData4 = TempData.mid(33,4);
+            QString TempData5 = TempData.mid(38,4);
+            QString TempData6 = TempData.mid(43,4);
+            QString TempData7 = TempData.mid(48,4);
+            QString TempData8 = TempData.mid(53,4);
+            QString TempData9 = TempData.mid(58,4);
+            QString TempData10 = TempData.mid(63,4);
+
+            int indexPositiveSl = output.indexOf("Positive Slope: ",1);
+            QString PositiveSl = output.mid(indexPositiveSl,40);
+            QString PositiveSl1 = PositiveSl.mid(16,4);
+            QString PositiveSl2 = PositiveSl.mid(21,4);
+            QString PositiveSl3 = PositiveSl.mid(26,4);
+            QString PositiveSl4 = PositiveSl.mid(31,4);
+            QString PositiveSl5 = PositiveSl.mid(36,4);
+
+            int indexTimeAboveL = output.indexOf("Time Above Liquids: ",1);
+            QString TimeAboveL = output.mid(indexTimeAboveL,50);
+            QString TimeAboveL1 = TimeAboveL.mid(20,5);
+            QString TimeAboveL2 = TimeAboveL.mid(26,5);
+            QString TimeAboveL3 = TimeAboveL.mid(32,5);
+            QString TimeAboveL4 = TimeAboveL.mid(38,5);
+            QString TimeAboveL5 = TimeAboveL.mid(44,5);
+
+            int indexPeakTemp = output.indexOf("Peak Temperature: ",1);
+            QString PeakTemp = output.mid(indexPeakTemp,48);
+            QString PeakTemp1 = PeakTemp.mid(18,5);
+            QString PeakTemp2 = PeakTemp.mid(24,5);
+            QString PeakTemp3 = PeakTemp.mid(30,5);
+            QString PeakTemp4 = PeakTemp.mid(36,5);
+            QString PeakTemp5 = PeakTemp.mid(42,5);
+
+            /*qDebug() << PeakTemp;
+            qDebug() << PeakTemp1;
+            qDebug() << PeakTemp2;
+            qDebug() << PeakTemp3;
+            qDebug() << PeakTemp4;
+            qDebug() << PeakTemp5;*/
+
+
+            /*qDebug() << TimeAboveL;
+            qDebug() << TimeAboveL1;
+            qDebug() << TimeAboveL2;
+            qDebug() << TimeAboveL3;
+            qDebug() << TimeAboveL4;
+            qDebug() << TimeAboveL5;*/
+
+            /*qDebug() << PositiveSl1;
+            qDebug() << PositiveSl2;
+            qDebug() << PositiveSl3;
+            qDebug() << PositiveSl4;
+            qDebug() << PositiveSl5;*/
+
+         /* qDebug() << TempData;
+            qDebug() << TempData1;
+            qDebug() << TempData2;
+            qDebug() << TempData3;
+            qDebug() << TempData4;
+            qDebug() << TempData5;
+            qDebug() << TempData6;
+            qDebug() << TempData7;
+            qDebug() << TempData8;
+            qDebug() << TempData9;
+            qDebug() << TempData10;*/
+            qDebug() << output;
+           
 
             QFile file(fileName);
 
@@ -229,6 +354,7 @@ void MainWindow::on_selectFilePB_clicked()
             */
         }
 }
+
 
 
 void MainWindow::setParameterTW(int index)
@@ -283,6 +409,7 @@ void MainWindow::setParameterTW(int index)
 
 
 
+
 void MainWindow::updateParametersTW(QStringList &values) {
 
     // This just create new items with the information on the list values and
@@ -293,6 +420,7 @@ void MainWindow::updateParametersTW(QStringList &values) {
         ui->parametersTW->setItem(0,i, auxCellTWI);
     }
 }
+
 
 void MainWindow::updateTempTW(QStringList &values) {
 
@@ -305,6 +433,8 @@ void MainWindow::updateTempTW(QStringList &values) {
     }
 }
 
+
+
 QStringList MainWindow::getRiseSlopeValues() {
 
     //qDebug() << ui->parametersTW->item(4,0)->text();
@@ -315,6 +445,7 @@ QStringList MainWindow::getRiseSlopeValues() {
 
     return riseValues;
 }
+
 
 QStringList MainWindow::getPeakTempValues() {
 
@@ -335,6 +466,8 @@ QStringList MainWindow::getTimeAboveValues() {
 
     return timeValues;
 }
+
+
 
 
 //Graph and table showed by clicking Positive Slopes Results Button
@@ -661,4 +794,276 @@ void MainWindow::on_cleanPB_clicked()
     ui->modelCB->clear();
     ui->familyCB->setCurrentIndex(0);
     ui->boardSideCB->setCurrentIndex(0);
+    ui->productionLineCB->setCurrentIndex(0);
 }
+
+
+
+/* **************************************************
+ * Start the code for the control UI part
+ *
+ */
+
+void MainWindow::updateParametersTWC(QStringList &values) {
+
+    // This just create new items with the information on the list values and
+    // put it into the table.
+    for (int i = 0; i<4; i++) {
+        QTableWidgetItem  *auxCellTWI = new QTableWidgetItem(values[i]);
+        auxCellTWI->setTextAlignment(Qt::AlignCenter);
+        ui->parametersTWC->setItem(0,i, auxCellTWI);
+    }
+}
+
+
+void MainWindow::updateHeaderParametersTWC(int index) {
+
+    for (int i = 0; i<10; i++) {
+        //ui.tableWidgetTextureLibrary->setHorizontalHeaderItem(0, new QTableWidgetItem("Prueba"));
+        //ui.tableWidgetTextureLibrary->horizontalHeaderItem(0)->setText("Whatever");
+
+        //QString value = QString::number(i);
+        //QTableWidgetItem  *auxCellTWI = new QTableWidgetItem(value);
+        //auxCellTWI->setTextAlignment(Qt::AlignCenter);
+
+        if (i < index) {
+            ui->profilesTWC->setRowHidden(i, false);
+        } else {
+            ui->profilesTWC->setRowHidden(i, true);
+        }
+
+        //qDebug() << auxCellTWI->text();
+        //ui->profilesTWC->verticalHeaderItem(i)->setText(value);
+    }
+}
+
+
+void MainWindow::on_familyCBC_activated(int index)
+{
+    /*
+     * When the family on control Tab combo box is clicked it is cleanead the group and model
+     * combo box... The index that the user choose is assigned to the family index var
+     * in order to add the correct items on the other combo boxes.
+     *
+     */
+
+    ui->groupCBC->clear();
+    ui->modelCBC->clear();
+
+    switch (index) {
+
+        case(1):
+            ui->groupCBC->addItems(videoFamily);
+            familyIndexControl = index;
+        break;
+
+        case(2):
+            ui->groupCBC->addItems(dsrFamily);
+            familyIndexControl = index;
+        break;
+
+        case(3):
+            ui->groupCBC->addItems(picsFamily);
+            familyIndexControl = index;
+        break;
+
+        case(4):
+            ui->groupCBC->addItems(e6milFamily);
+            familyIndexControl = index;
+        break;
+    }
+}
+
+
+
+void MainWindow::on_groupCBC_activated(int index)
+{
+    /*
+     * When the family combo box is clicked it is cleanead the model
+     * combo box... The index that the user choose and with the family Index var value
+     * it is added the right items on the model combo box
+     *
+     */
+
+    ui->modelCBC->clear();
+
+    switch (familyIndexControl) {
+
+    case(1):
+        if (index == 1) {
+            ui->modelCBC->addItems(videoRockstar);
+            setParameterTWC(1);
+            ui->solderPasteCBC->setCurrentIndex(1);
+
+        } else if (index == 2) {
+            ui->modelCBC->addItems(videoAGB);
+            setParameterTWC(1);
+            ui->solderPasteCBC->setCurrentIndex(1);
+
+        } else if (index == 3) {
+            ui->modelCBC->addItems(videoME7mil);
+            setParameterTWC(2);
+            ui->solderPasteCBC->setCurrentIndex(2);
+
+        }else if (index == 4) {
+            ui->modelCBC->addItems(videoCAP);
+            setParameterTWC(1);
+            ui->solderPasteCBC->setCurrentIndex(1);
+        }
+        break;
+
+    case(2):
+        if (index == 1){
+            ui->modelCBC->addItems(dsrLeadFree);
+            setParameterTWC(2);
+            ui->solderPasteCBC->setCurrentIndex(2);
+
+        } else if (index==2){
+            ui->modelCBC->addItems(dsrLegacyLead);
+            setParameterTWC(5);
+            ui->solderPasteCBC->setCurrentIndex(5);
+        }
+       break;
+
+    case(3):
+        if (index == 1){
+            ui->modelCBC->addItems(picsGroup_Pics);
+            setParameterTWC(3);
+            ui->solderPasteCBC->setCurrentIndex(3);
+        }
+        break;
+    case(4):
+        if (index == 1){
+            ui->modelCBC->addItems(e6milGroup_E6mil);
+            setParameterTWC(4);
+            ui->solderPasteCBC->setCurrentIndex(4);
+        }
+        break;
+    }
+}
+
+
+void MainWindow::on_profileCBC_activated(int index)
+{
+    //QString value = ui->profileCBC->currentText();
+    if (index == 0) {
+        updateHeaderParametersTWC(10);
+    } else {
+        updateHeaderParametersTWC(index + 3);
+    }
+}
+
+
+
+void MainWindow::setParameterTWC(int index)
+{
+    /*
+     * When the solder paste combo box change it is updated the values on the
+     * acceptable parameter table widget, these values depens on the index that
+     * it is clicked.
+     *
+     *
+     */
+
+    switch(index) {
+        case 1:
+        {
+            QStringList actualValues = {"30","100","230","262"};
+            updateParametersTWC(actualValues);
+        }
+        break;
+
+
+        case 2:
+        {
+            QStringList actualValues = {"30","100","230","262"};
+            updateParametersTWC(actualValues);
+         }
+        break;
+
+        case 3:
+        {
+            QStringList actualValues = {"30","90","232","255"};
+            updateParametersTWC(actualValues);
+         }
+        break;
+
+        case 4:
+        {
+            QStringList actualValues = {"30","90","230","250"};
+            updateParametersTWC(actualValues);
+         }
+        break;
+
+        case 5:
+        {
+            QStringList actualValues = {"30","90","208","228"};
+            updateParametersTWC(actualValues);
+         }
+        break;
+    }
+}
+
+void MainWindow::on_cleanPBC_clicked()
+{
+    QStringList actualValuesPTWC = {"","","","","",""};
+    updateParametersTWC(actualValuesPTWC);
+
+
+    ui->groupCBC->clear();
+    ui->modelCBC->clear();
+    ui->familyCBC->setCurrentIndex(0);
+    ui->boardSideCBC->setCurrentIndex(0);
+    ui->productionLineCBC->setCurrentIndex(0);
+    ui->profileCBC->setCurrentIndex(0);
+}
+
+void MainWindow::on_TALPBC_clicked()
+{
+    QString value = ui->profileCBC->currentText();
+    QString paste = ui->solderPasteCBC->currentText();
+    QString variable = "Time Above Liquids";
+
+    qDebug() << value;
+    qDebug() << paste;
+    qDebug() << variable;
+
+    QDir dir("C:/Users/Oliver y Ale/Desktop/sTostado-master/DAtaExtractionAndStatisticsCalculation");
+    //se obtiene el path de donde esta ubicada la aplicacion si se ponen los scripts python en el mismo lugar funciona,
+    QString dir1(QCoreApplication::applicationDirPath ());
+    QFileInfo info(dir1, "ControlProcessStatisticsCalculationComplete.py");
+    qDebug() << dir.exists() << info.exists();
+    QProcess process;
+    process.setProcessChannelMode(QProcess::MergedChannels);
+    process.start("python.exe", QStringList()<< info.absoluteFilePath() << correctfileName << variable << value << paste);
+    qDebug() << process.atEnd();
+    process.waitForFinished(-1);
+    QString output(process.readAll());
+
+
+}
+
+void MainWindow::on_peakTempPBC_clicked()
+{
+    QString value = ui->profileCBC->currentText();
+    QString paste = ui->solderPasteCBC->currentText();
+    QString variable = "Peak Temperature";
+
+    qDebug() << value;
+    qDebug() << paste;
+    qDebug() << variable;
+
+    QDir dir("C:/Users/Oliver y Ale/Desktop/sTostado-master/DAtaExtractionAndStatisticsCalculation");
+    //se obtiene el path de donde esta ubicada la aplicacion si se ponen los scripts python en el mismo lugar funciona,
+    QString dir1(QCoreApplication::applicationDirPath ());
+    QFileInfo info(dir1, "ControlProcessStatisticsCalculationComplete.py");
+    qDebug() << dir.exists() << info.exists();
+    QProcess process;
+    process.setProcessChannelMode(QProcess::MergedChannels);
+    process.start("python.exe", QStringList()<< info.absoluteFilePath() << correctfileName << variable << value << paste);
+    qDebug() << process.atEnd();
+    process.waitForFinished(-1);
+    QString output(process.readAll());
+}
+
+
