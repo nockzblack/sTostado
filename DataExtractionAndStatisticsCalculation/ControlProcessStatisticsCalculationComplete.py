@@ -4,7 +4,6 @@ import sys
 import random
 import shutil
 
-
 DestinyPath = sys.argv[1]  # """Necessary parameter to run the code. This variable has to be assigned to the specific route of the directory where the thermal profiles are."""
 OriginPath = os.getcwd()
 os.chdir(DestinyPath)
@@ -424,7 +423,13 @@ if cont1 == len(conclutions):
         UCLXBar_TAL = (A2 * RBar_TAL) + XBarBar_TAL
         CLXBar_TAL = XBarBar_TAL
         LCLXBar_TAL = XBarBar_TAL - (A2 * RBar_TAL)
-        return Cpk_TAL, LCLR_TAL, UCLR_TAL, CLR_TAL, UCLXBar_TAL, CLXBar_TAL, LCLXBar_TAL
+        print(Cpk_TAL)
+        print(LCLR_TAL)
+        print(UCLR_TAL)
+        print(CLR_TAL)
+        print(UCLXBar_TAL)
+        print(CLXBar_TAL)
+        print(LCLXBar_TAL)
 
     def PeakTemperatureCalculation(d2, D3, D4, A2):
         XBarW_PT = list()
@@ -472,12 +477,18 @@ if cont1 == len(conclutions):
         UCLXBar_PT = (A2 * RBar_PT) + XBarBar_PT
         CLXBar_PT = XBarBar_PT
         LCLXBar_PT = XBarBar_PT - (A2 * RBar_PT)
-        return Cpk_PT, LCLR_PT, UCLR_PT, CLR_PT, UCLXBar_PT, CLXBar_PT, LCLXBar_PT
+        print(Cpk_PT)
+        print(LCLR_PT)
+        print(UCLR_PT)
+        print(CLR_PT)
+        print(UCLXBar_PT)
+        print(CLXBar_PT)
+        print(LCLXBar_PT)
     DocMessage.close()
     Results2.close()
     nameDocs = ["Results2.txt", "Values2.txt", "OutPut2.txt"]
     if UserVariableElection == "Time Above Liquidus":
-        print(TimeAboveLiquidsCalculation(d2, D3, D4, A2), end=" ")
+        TimeAboveLiquidsCalculation(d2, D3, D4, A2)
         for i in nameDocs:
             os.chdir(OriginPath)
             if os.path.exists(i):
@@ -486,7 +497,7 @@ if cont1 == len(conclutions):
             shutil.move(i, OriginPath)
         # """We have to show all this data to the user on the user nterface."""
     elif UserVariableElection == "Peak Temperature":
-        print(PeakTemperatureCalculation(d2, D3, D4, A2), end=" ")
+        PeakTemperatureCalculation(d2, D3, D4, A2)
         for i in nameDocs:
             os.chdir(OriginPath)
             if os.path.exists(i):
