@@ -1023,10 +1023,13 @@ void MainWindow::on_TALPBC_clicked()
     QString value = ui->profileCBC->currentText();
     QString paste = ui->solderPasteCBC->currentText();
     QString variable = "Time Above Liquids";
+    QString path = ui->lineEdit->text();
+
 
     qDebug() << value;
     qDebug() << paste;
     qDebug() << variable;
+    qDebug() << path;
 
     QDir dir("C:/Users/Oliver y Ale/Desktop/sTostado-master/DAtaExtractionAndStatisticsCalculation");
     //se obtiene el path de donde esta ubicada la aplicacion si se ponen los scripts python en el mismo lugar funciona,
@@ -1035,7 +1038,7 @@ void MainWindow::on_TALPBC_clicked()
     qDebug() << dir.exists() << info.exists();
     QProcess process;
     process.setProcessChannelMode(QProcess::MergedChannels);
-    process.start("python.exe", QStringList()<< info.absoluteFilePath() << correctfileName << variable << value << paste);
+    process.start("python.exe", QStringList()<< info.absoluteFilePath() << path << variable << value << paste);
     qDebug() << process.atEnd();
     process.waitForFinished(-1);
     QString output(process.readAll());
@@ -1048,10 +1051,13 @@ void MainWindow::on_peakTempPBC_clicked()
     QString value = ui->profileCBC->currentText();
     QString paste = ui->solderPasteCBC->currentText();
     QString variable = "Peak Temperature";
+    QString path = ui->lineEdit->text();
+
 
     qDebug() << value;
     qDebug() << paste;
     qDebug() << variable;
+    qDebug() << path;
 
     QDir dir("C:/Users/Oliver y Ale/Desktop/sTostado-master/DAtaExtractionAndStatisticsCalculation");
     //se obtiene el path de donde esta ubicada la aplicacion si se ponen los scripts python en el mismo lugar funciona,
@@ -1060,10 +1066,8 @@ void MainWindow::on_peakTempPBC_clicked()
     qDebug() << dir.exists() << info.exists();
     QProcess process;
     process.setProcessChannelMode(QProcess::MergedChannels);
-    process.start("python.exe", QStringList()<< info.absoluteFilePath() << correctfileName << variable << value << paste);
+    process.start("python.exe", QStringList()<< info.absoluteFilePath() << path << variable << value << paste);
     qDebug() << process.atEnd();
     process.waitForFinished(-1);
     QString output(process.readAll());
 }
-
-
