@@ -328,7 +328,7 @@ void MainWindow::on_selectFilePB_clicked()
             qDebug() << TempData9;
             qDebug() << TempData10;*/
             qDebug() << output;
-            ui->textEdit->setText(output);
+           
 
             QFile file(fileName);
 
