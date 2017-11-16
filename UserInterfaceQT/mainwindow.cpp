@@ -9,6 +9,8 @@
 #include <QStringList>
 #include <QTableWidget>
 #include <QPalette>
+#include <QProcess>
+#include <QFileInfo>
 
 #include <QChart>
 #include <QtCharts/QChartView>
@@ -228,10 +230,105 @@ void MainWindow::on_selectFilePB_clicked()
     QString fileName = QFileDialog::getOpenFileName(this,
         tr("Jajaja"), "/Users/Fer/Downloads",
         tr("All Files (*)"));
+    //Obtencion de parametros necesarios para el codigo python.
+    QString Name = QFileInfo(fileName).fileName();
+    QFileInfo  info(fileName);
+    QString correctfileName = info.path();
+    correctfileName.remove(0,2);
+
+    QString paste = ui->solderPasteCB->currentText();
 
     if (fileName.isEmpty())
             return;
         else {
+            //Codigo necesario para utilizar script python.
+            qDebug() << correctfileName;
+            qDebug() << Name;
+            qDebug() << paste;
+            QDir dir("C:/Users/Oliver y Ale/Desktop/sTostado-master/DAtaExtractionAndStatisticsCalculation");
+            //se obtiene el path de donde esta ubicada la aplicacion si se ponen los scripts python en el mismo lugar funciona,
+            QString dir1(QCoreApplication::applicationDirPath ());
+            QFileInfo info(dir1, "PreControProcessStatisticsCalculationCompleted.py");
+            qDebug() << dir.exists() << info.exists();
+            QProcess process;
+            process.setProcessChannelMode(QProcess::MergedChannels);
+            process.start("python.exe", QStringList()<< info.absoluteFilePath() << correctfileName << Name << paste);
+            qDebug() << process.atEnd();
+            process.waitForFinished(-1);
+            QString output(process.readAll());
+            
+            //Obtencion de datos del output del script python.
+            int indexTempData = output.indexOf("Temperature Data: ",1);
+            QString TempData = output.mid(indexTempData,68);
+            QString TempData1 = TempData.mid(18,4);
+            QString TempData2 = TempData.mid(23,4);
+            QString TempData3 = TempData.mid(28,4);
+            QString TempData4 = TempData.mid(33,4);
+            QString TempData5 = TempData.mid(38,4);
+            QString TempData6 = TempData.mid(43,4);
+            QString TempData7 = TempData.mid(48,4);
+            QString TempData8 = TempData.mid(53,4);
+            QString TempData9 = TempData.mid(58,4);
+            QString TempData10 = TempData.mid(63,4);
+
+            int indexPositiveSl = output.indexOf("Positive Slope: ",1);
+            QString PositiveSl = output.mid(indexPositiveSl,40);
+            QString PositiveSl1 = PositiveSl.mid(16,4);
+            QString PositiveSl2 = PositiveSl.mid(21,4);
+            QString PositiveSl3 = PositiveSl.mid(26,4);
+            QString PositiveSl4 = PositiveSl.mid(31,4);
+            QString PositiveSl5 = PositiveSl.mid(36,4);
+
+            int indexTimeAboveL = output.indexOf("Time Above Liquids: ",1);
+            QString TimeAboveL = output.mid(indexTimeAboveL,50);
+            QString TimeAboveL1 = TimeAboveL.mid(20,5);
+            QString TimeAboveL2 = TimeAboveL.mid(26,5);
+            QString TimeAboveL3 = TimeAboveL.mid(32,5);
+            QString TimeAboveL4 = TimeAboveL.mid(38,5);
+            QString TimeAboveL5 = TimeAboveL.mid(44,5);
+
+            int indexPeakTemp = output.indexOf("Peak Temperature: ",1);
+            QString PeakTemp = output.mid(indexPeakTemp,48);
+            QString PeakTemp1 = PeakTemp.mid(18,5);
+            QString PeakTemp2 = PeakTemp.mid(24,5);
+            QString PeakTemp3 = PeakTemp.mid(30,5);
+            QString PeakTemp4 = PeakTemp.mid(36,5);
+            QString PeakTemp5 = PeakTemp.mid(42,5);
+
+            /*qDebug() << PeakTemp;
+            qDebug() << PeakTemp1;
+            qDebug() << PeakTemp2;
+            qDebug() << PeakTemp3;
+            qDebug() << PeakTemp4;
+            qDebug() << PeakTemp5;*/
+
+
+            /*qDebug() << TimeAboveL;
+            qDebug() << TimeAboveL1;
+            qDebug() << TimeAboveL2;
+            qDebug() << TimeAboveL3;
+            qDebug() << TimeAboveL4;
+            qDebug() << TimeAboveL5;*/
+
+            /*qDebug() << PositiveSl1;
+            qDebug() << PositiveSl2;
+            qDebug() << PositiveSl3;
+            qDebug() << PositiveSl4;
+            qDebug() << PositiveSl5;*/
+
+         /* qDebug() << TempData;
+            qDebug() << TempData1;
+            qDebug() << TempData2;
+            qDebug() << TempData3;
+            qDebug() << TempData4;
+            qDebug() << TempData5;
+            qDebug() << TempData6;
+            qDebug() << TempData7;
+            qDebug() << TempData8;
+            qDebug() << TempData9;
+            qDebug() << TempData10;*/
+            qDebug() << output;
+            ui->textEdit->setText(output);
 
             QFile file(fileName);
 
