@@ -1018,3 +1018,52 @@ void MainWindow::on_cleanPBC_clicked()
     ui->profileCBC->setCurrentIndex(0);
 }
 
+void MainWindow::on_TALPBC_clicked()
+{
+    QString value = ui->profileCBC->currentText();
+    QString paste = ui->solderPasteCBC->currentText();
+    QString variable = "Time Above Liquids";
+
+    qDebug() << value;
+    qDebug() << paste;
+    qDebug() << variable;
+
+    QDir dir("C:/Users/Oliver y Ale/Desktop/sTostado-master/DAtaExtractionAndStatisticsCalculation");
+    //se obtiene el path de donde esta ubicada la aplicacion si se ponen los scripts python en el mismo lugar funciona,
+    QString dir1(QCoreApplication::applicationDirPath ());
+    QFileInfo info(dir1, "ControlProcessStatisticsCalculationComplete.py");
+    qDebug() << dir.exists() << info.exists();
+    QProcess process;
+    process.setProcessChannelMode(QProcess::MergedChannels);
+    process.start("python.exe", QStringList()<< info.absoluteFilePath() << correctfileName << variable << value << paste);
+    qDebug() << process.atEnd();
+    process.waitForFinished(-1);
+    QString output(process.readAll());
+
+
+}
+
+void MainWindow::on_peakTempPBC_clicked()
+{
+    QString value = ui->profileCBC->currentText();
+    QString paste = ui->solderPasteCBC->currentText();
+    QString variable = "Peak Temperature";
+
+    qDebug() << value;
+    qDebug() << paste;
+    qDebug() << variable;
+
+    QDir dir("C:/Users/Oliver y Ale/Desktop/sTostado-master/DAtaExtractionAndStatisticsCalculation");
+    //se obtiene el path de donde esta ubicada la aplicacion si se ponen los scripts python en el mismo lugar funciona,
+    QString dir1(QCoreApplication::applicationDirPath ());
+    QFileInfo info(dir1, "ControlProcessStatisticsCalculationComplete.py");
+    qDebug() << dir.exists() << info.exists();
+    QProcess process;
+    process.setProcessChannelMode(QProcess::MergedChannels);
+    process.start("python.exe", QStringList()<< info.absoluteFilePath() << correctfileName << variable << value << paste);
+    qDebug() << process.atEnd();
+    process.waitForFinished(-1);
+    QString output(process.readAll());
+}
+
+
