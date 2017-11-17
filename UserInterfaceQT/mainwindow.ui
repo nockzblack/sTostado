@@ -437,7 +437,7 @@
        <rect>
         <x>10</x>
         <y>130</y>
-        <width>711</width>
+        <width>791</width>
         <height>51</height>
        </rect>
       </property>
@@ -503,7 +503,7 @@
       <enum>Qt::DefaultContextMenu</enum>
      </property>
      <attribute name="title">
-      <string>Tab 2</string>
+      <string>Control</string>
      </attribute>
      <widget class="QWidget" name="gridLayoutWidget_2">
       <property name="geometry">
