@@ -15,8 +15,6 @@
 #include <QtCharts/QLineSeries>
 #include <QtCharts/QValueAxis>
 #include <QtCharts/QScatterSeries>
-
-
 #include <QProcess>
 #include <QFileInfo>
 
@@ -61,8 +59,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //ui->centralWidget->setStyleSheet("background-color: rgb(217,217,217);");
 
-    //qDebug() << ui->familyCB->currentText();
-
     // Set default values and properties to precontrol tables widgets
     setDefaultParametersTW();
     setDefaultTempTW();
@@ -74,34 +70,17 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->solderPasteCBC->setEnabled(false);
     ui->selectFilePB->setEnabled(false);
     ui->savePB->setEnabled(false);
-    /*
-    QString pwd("");
-    char * PWD;
-    PWD = getenv ("PWD");
-    pwd.append(PWD);
-    qDebug() << "Working directory : " << pwd << flush;
-    */
-
-    //ui->controlTabW->
-
-    //saveInfo();
-    arrengeStr();
-
+    ui->positiveSlopePB->setEnabled(false);
+    ui->TALPB->setEnabled(false);
+    ui->peakTempPB->setEnabled(false);
 }
 
 
 MainWindow::~MainWindow()
 {
     delete ui;
+
 }
-
-
-
-/* **************************************************
- * Start the code for the precontrol UI part
- *
- */
-
 
 void MainWindow::on_savePB_clicked()
 {
@@ -116,8 +95,9 @@ void MainWindow::on_savePB_clicked()
         msgBox.setText("An error occur trying to save data");
         msgBox.exec();
     }
-
 }
+
+
 
 
 bool MainWindow::saveInfo() {
@@ -134,8 +114,6 @@ bool MainWindow::saveInfo() {
 
     QTextStream out(&auxFile);
 
-    //qDebug() << currentTexts();
-    //out << currentTexts();
     out << currentTexts();
 
     auxFile.close();
@@ -227,6 +205,7 @@ QString MainWindow::currentTexts() {
 }
 
 
+
 void MainWindow::setDefaultParametersTW() {
     // Set default values and properties to parameters TW on preControl tab
     QHeaderView *parameterHorHeader = ui->parametersTW ->horizontalHeader();
@@ -263,61 +242,6 @@ void MainWindow::setDefaultTempTW() {
 }
 
 
-void MainWindow::arrengeStr() {
-    QString auxStr = "A\r\n1.52\r\n1.65\r\n1.61\r\n1.57\r\n1.72\r\nB\r\n67.90\r\n65.00\r\n65.40\r\n64.00\r\n67.10\r\nC\r\n241.7\r\n239.9\r\n239.4\r\n241.3\r\n241.6\r\nD\r\n0120\r\n0130\r\n0155\r\n0180\r\n0190\r\n0215\r\n0230\r\n0235\r\n0245\r\n0275\r\nE\r\n1.325\r\n0.9750000000000001\r\n75.0\r\n45.0\r\n249.25\r\n237.75\r\n";
-    int bPos = auxStr.indexOf("B");
-    int cPos = auxStr.indexOf("C");
-    int dPos = auxStr.indexOf("D");
-    int ePos = auxStr.indexOf("E");
-
-
-    int difCB = cPos - bPos;
-    int difDC = dPos - cPos;
-    int difED = ePos - dPos;
-
-    QString PSValues = auxStr.mid(0,bPos);
-    QString TALValues = auxStr.mid(bPos,difCB);
-    QString PTVAlues = auxStr.mid(cPos,difDC);
-    QString OTValues = auxStr.mid(dPos,difED);
-    QString preControlLimitsValues = auxStr.mid(ePos,auxStr.length()-ePos);
-
-
-    positiveSlopeValues = getStringValues(PSValues);
-    timeAboveValues = getStringValues(TALValues);
-    peakTemperatureValues = getStringValues(PTVAlues);
-    ovenTempValues = getStringValues(OTValues);
-    preControlLimits = getStringValues(preControlLimitsValues);
-}
-
-
-QStringList MainWindow::getStringValues(QString& str) {
-    QStringList  stringValues;
-    bool intFlag = false;
-    bool strFlag = false;
-
-    QString auxStr = "";
-
-    for (int i = 0; i<str; ++i) {
-
-        if (str[i].isDigit() or str[i] == '.') {
-            intFlag = true;
-            auxStr += str[i];
-            strFlag = true;
-        } else {
-            intFlag = false;
-        }
-
-
-        if (intFlag == false and strFlag == true) {
-            stringValues.append(auxStr);
-            auxStr = "";
-            strFlag = false;
-        }
-    }
-
-    //qDebug() << stringValues[0] << stringValues[1] << stringValues[2] << stringValues[3] << stringValues[4];
-    return stringValues;
-}
 
 void MainWindow::on_familyCB_activated(int index)
 {
@@ -421,6 +345,103 @@ void MainWindow::on_groupCB_activated(int index)
     }
 }
 
+
+void MainWindow::arangeValuesControl(QString& values){
+
+    int bPos = values.indexOf("B");
+    int cPos = values.indexOf("C");
+    int dPos = values.indexOf("D");
+    int ePos = values.indexOf("E");
+    int fPos = values.indexOf("F");
+    int gPos = values.indexOf("G");
+
+
+     int difCB = cPos - bPos;
+     int difDC = dPos - cPos;
+     int difED = ePos - dPos;
+     int difFE = fPos - ePos;
+     int difGF = gPos - fPos;
+
+
+      QString control1 = values.mid(0,bPos);
+      QString control2 = values.mid(bPos,difCB);
+      QString control3 = values.mid(cPos,difDC);
+      QString control4 = values.mid(dPos,difED);
+      QString control5 = values.mid(ePos,difFE);
+      QString control6 = values.mid(fPos,difGF);
+      QString control7 = values.mid(gPos,values.length()-gPos);
+
+
+        getStringValues(control1);
+        getStringValues(control2);
+        getStringValues(control3);
+        getStringValues(control4);
+        getStringValues(control5);
+        getStringValues(control6);
+        getStringValues(control7);
+
+
+}
+
+void MainWindow::arangeValues(QString& values){
+    int bPos = values.indexOf("B");
+    int cPos = values.indexOf("C");
+    int dPos = values.indexOf("D");
+    int ePos = values.indexOf("E");
+
+
+    int difCB = cPos - bPos;
+    int difDC = dPos - cPos;
+    int difED = ePos - dPos;
+
+
+     QString PSValues = values.mid(0,bPos);
+     QString TALValues = values.mid(bPos,difCB);
+     QString PTVAlues = values.mid(cPos,difDC);
+     QString OTValues = values.mid(dPos,difED);
+     QString preControlLimitsValues = values.mid(ePos,values.length()-ePos);
+
+
+
+     positiveSlopeValues = getStringValues(PSValues);
+     timeAboveValues = getStringValues(TALValues);
+     peakTemperatureValues = getStringValues(PTVAlues);
+     ovenTempValues = getStringValues(OTValues);
+     preControlLimits = getStringValues(preControlLimitsValues);
+
+}
+
+
+
+QStringList MainWindow::getStringValues(QString& str) {
+    QStringList  stringValues;
+    bool intFlag = false;
+    bool strFlag = false;
+
+    QString auxStr = "";
+
+    for (int i = 0; i<str; ++i) {
+
+        if (str[i].isDigit() or str[i] == '.') {
+            intFlag = true;
+            auxStr += str[i];
+            strFlag = true;
+        } else {
+            intFlag = false;
+        }
+
+        if (intFlag == false and strFlag == true) {
+            stringValues.append(auxStr);
+            auxStr = "";
+            strFlag = false;
+        }
+
+    }
+
+    return stringValues;
+}
+
+
 void MainWindow::on_selectFilePB_clicked()
 {
 
@@ -431,77 +452,37 @@ void MainWindow::on_selectFilePB_clicked()
      *
      */
 
-
     QString fileName = QFileDialog::getOpenFileName(this,
-        tr(""), "/Users/Fer/Desktop",
-        tr("(*)"));
+        tr(""), "",
+        tr("All Files (*)"));
+    //Obtencion de parametros necesarios para el codigo python.
+    QString Name = QFileInfo(fileName).fileName();
+    QFileInfo  info(fileName);
+    QString correctfileName = info.path();
+    correctfileName.remove(0,2);
+    ui->lineEdit->setText(correctfileName);
 
-    if (fileName.isEmpty()) {
-        return;
-    } else {
-        QDir dir(".");
-        QString path = dir.absolutePath();
+    QString paste = ui->solderPasteCB->currentText();
 
-        QString Name = QFileInfo(fileName).fileName();
-        QFileInfo info(fileName);
-        QString correctfileName = info.path();
-        QString selectedPaste = ui->solderPasteCB->currentText();
+    if (fileName.isEmpty())
+            return;
+        else {
+            //Codigo necesario para utilizar script python.
+            QDir dir("C:/Users/Oliver y Ale/Desktop/sTostado-master/DAtaExtractionAndStatisticsCalculation");
+            //se obtiene el path de donde esta ubicada la aplicacion si se ponen los scripts python en el mismo lugar funciona,
+            QString dir1(QCoreApplication::applicationDirPath ());
+            QFileInfo info(dir1, "PreControProcessStatisticsCalculationCompleted.py");
+            qDebug() << dir.exists() << info.exists();
+            QProcess process;
+            process.setProcessChannelMode(QProcess::MergedChannels);
+            process.start("python.exe", QStringList()<< info.absoluteFilePath() << correctfileName << Name << paste);
+            qDebug() << process.atEnd();
+            process.waitForFinished(-1);
+            QString output(process.readAll());
+            arangeValues(output);
+            updateTempTW(ovenTempValues);
 
-        //qDebug() << Name;
-        //qDebug() << correctfileName;
-        //qDebug() << selectedPaste;
-
-        //QString dir1(QCoreApplication::applicationDirPath());
-        QFileInfo info2(path, "preControl.py");
-
-        //qDebug() << path;
-        //qDebug() << info.absoluteFilePath();
-        //qDebug() << Name;
-
-        //qDebug() << dir.exists();
-        //qDebug() << info.exists();
-
-
-        QProcess auxProcess;
-        auxProcess.setProcessChannelMode(QProcess::MergedChannels);
-        auxProcess.start("./ ", QStringList() << dir.absolutePath() << correctfileName << Name << selectedPaste);
-        //qDebug() << auxProcess.atEnd();
-
-        auxProcess.waitForFinished(-1);
-        QString output(auxProcess.readAll());
-
-        //qDebug() << "data:";
-        //qDebug() << output;
-
-        arrengeStr();
-
-        updateTempTW(ovenTempValues);
-    }
-
-        /*
-         //qDebug() << correctfileName;
-         //qDebug() << Name;
-         //qDebug() << paste;
-
-         //QDir dir("C:/Users/Oliver y Ale/Desktop/sTostado-master/DAtaExtractionAndStatisticsCalculation");
-         +            //se obtiene el path de donde esta ubicada la aplicacion si se ponen los scripts python en el mismo lugar funciona,
-         //QString dir1(QCoreApplication::applicationDirPath ());
-
-         +            //QFileInfo info(dir1, "PreControProcessStatisticsCalculationCompleted.py");
-         +            //qDebug() << dir.exists() << info.exists();
-
-         +            QProcess process;
-         +            process.setProcessChannelMode(QProcess::MergedChannels);
-         +            process.start("python.exe", QStringList()<< info.absoluteFilePath() << correctfileName << Name << paste);
-         +            qDebug() << process.atEnd();
-         +            process.waitForFinished(-1);
-         +            QString output(process.readAll());
-
-            QFileInfo info
-
-            QFile file(fileName);
-
-            */
+            
 
 
             /*
@@ -517,16 +498,15 @@ void MainWindow::on_selectFilePB_clicked()
             while (!in.atEnd()) {
                 //auxGraph.adj.clear();   // clear existing contacts
                 //in >> auxGraph;
-            }
+            }*/
 
-
+            /*
             if (auxGraph.node.isEmpty()) {
                 QMessageBox::information(this, tr("No grafo en el archivo"),
                     tr("The file you are attempting to open contains no info."));
             }
-
+            */
         }
-        */
 }
 
 
@@ -611,7 +591,6 @@ void MainWindow::updateTempTW(QStringList &values) {
 
 QStringList MainWindow::getRiseSlopeValues() {
 
-    //qDebug() << ui->parametersTW->item(4,0)->text();
     QString mimRise = ui->parametersTW->item(4,0)->text();
     QString maxRise = ui->parametersTW->item(5,0)->text();
 
@@ -846,7 +825,7 @@ void MainWindow::on_positiveSlopePB_clicked()
     QWidget *posSlopeWindow = new QWidget();
     posSlopeWindow->setLayout(layout);
     posSlopeWindow->setWindowTitle("Positive Slope Results");
-    posSlopeWindow->resize(800,360);
+    posSlopeWindow->resize(800,500);
     posSlopeWindow->show();
 
 }
@@ -854,7 +833,6 @@ void MainWindow::on_positiveSlopePB_clicked()
 //Graph and table showed by clicking TAL Results Button
 void MainWindow::on_TALPB_clicked()
 {
-
     QStringList timeValues = getTimeAboveValues(); //getting value from acceptable parameters.
 
      //setting the font for the labels the font for all labels will be the same.
@@ -1030,7 +1008,8 @@ void MainWindow::on_TALPB_clicked()
 
 }
 
-//Graph and table showed by clicking Peak Temperature Results Button
+
+
 void MainWindow::on_peakTempPB_clicked()
 {
     QStringList peakTempValues = getPeakTempValues();
@@ -1208,6 +1187,29 @@ void MainWindow::on_peakTempPB_clicked()
     peakTempWindow->show();
 }
 
+
+void MainWindow::on_productionLineCB_activated(int index) {
+    if (ui->familyCB->currentIndex() != 0) {
+        if (ui->groupCB->currentIndex() != 0) {
+            if (ui->boardSideCB->currentIndex() != 0) {
+                if (ui->modelCB->currentIndex() != 0) {
+                    if (ui->solderPasteCB->currentIndex() != 0) {
+                        if (index != 0) {
+                            ui->selectFilePB->setEnabled(true);
+                            ui->savePB->setEnabled(true);
+                            ui->positiveSlopePB->setEnabled(true);
+                            ui->TALPB->setEnabled(true);
+                            ui->peakTempPB->setEnabled(true);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+
 void MainWindow::on_cleanPB_clicked()
 {
     QStringList actualValuesPTW = {"","","","","",""};
@@ -1222,27 +1224,12 @@ void MainWindow::on_cleanPB_clicked()
     ui->boardSideCB->setCurrentIndex(0);
     ui->productionLineCB->setCurrentIndex(0);
     ui->selectFilePB->setEnabled(false);
+    ui->savePB->setEnabled(false);
+    ui->positiveSlopePB->setEnabled(false);
+    ui->TALPB->setEnabled(false);
+    ui->peakTempPB->setEnabled(false);
 }
 
-
-
-void MainWindow::on_productionLineCB_activated(int index)
-{
-    if (ui->familyCB->currentIndex() != 0) {
-        if (ui->groupCB->currentIndex() != 0) {
-            if (ui->boardSideCB->currentIndex() != 0) {
-                if (ui->modelCB->currentIndex() != 0) {
-                    if (ui->solderPasteCB->currentIndex() != 0) {
-                        if (index != 0) {
-                            ui->selectFilePB->setEnabled(true);
-                            ui->savePB->setEnabled(true);
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
 
 
 
@@ -1250,29 +1237,6 @@ void MainWindow::on_productionLineCB_activated(int index)
  * Start the code for the control UI part
  *
  */
-
-
-
-QStringList MainWindow::getControlPeakTempValues() {
-
-    QString mimTime = ui->parametersTWC->item(2,0)->text();
-    QString maxTime = ui->parametersTWC->item(3,0)->text();
-
-    QStringList timeValues = {mimTime, maxTime};
-
-    return timeValues;
-}
-
-
-QStringList MainWindow::getControlTimeAboveValues() {
-
-    QString mimTime = ui->parametersTWC->item(0,0)->text();
-    QString maxTime = ui->parametersTWC->item(1,0)->text();
-
-    QStringList timeValues = {mimTime, maxTime};
-
-    return timeValues;
-}
 
 void MainWindow::updateParametersTWC(QStringList &values) {
 
@@ -1415,7 +1379,7 @@ void MainWindow::on_groupCBC_activated(int index)
 
 void MainWindow::on_profileCBC_activated(int index)
 {
-    //QString value = ui->profileCBC->currentText();
+
     if (index == 0) {
         updateHeaderParametersTWC(10);
     } else {
@@ -1489,206 +1453,64 @@ void MainWindow::on_cleanPBC_clicked()
 }
 
 
-
 void MainWindow::on_TALPBC_clicked()
 {
-    QStringList talValues = getControlTimeAboveValues();
+    QString value = ui->profileCBC->currentText();
+    QString paste = ui->solderPasteCBC->currentText();
+    QString variable = "Time Above Liquidus";
+    QString path = ui->lineEdit->text();
 
-    //setting the font for the labels the font for all labels will be the same.
-    QFont labelFont("Helvetica", 15, QFont::Bold); // fonts for all the labels
 
-    //setting the color for the line in the graph also setting the width of this line.
-    QPen pen(Qt::yellow);
-    pen.setWidth(3);
+    qDebug() << value;
+    qDebug() << paste;
+    qDebug() << variable;
+    qDebug() << path;
 
-    //Lower limit
-    QLineSeries *LSLseries = new QLineSeries();
-    LSLseries->setName("LSL");
-    LSLseries->setPen(pen);
-    LSLseries->setPointLabelsVisible(true);
-    LSLseries->setPointLabelsClipping(false);
-    LSLseries->setPointLabelsFont(labelFont);
-    LSLseries->setPointLabelsFormat("@yPoint");
-    LSLseries->append(1, talValues[0].toDouble());
-    LSLseries->append(5, talValues[0].toDouble());
+    QDir dir("C:/Users/Oliver y Ale/Desktop/sTostado-master/DAtaExtractionAndStatisticsCalculation");
+    //se obtiene el path de donde esta ubicada la aplicacion si se ponen los scripts python en el mismo lugar funciona,
+    QString dir1(QCoreApplication::applicationDirPath ());
+    QFileInfo info(dir1, "ControlProcessStatisticsCalculationComplete.py");
+    qDebug() << dir.exists() << info.exists();
+    QProcess process;
+    process.setProcessChannelMode(QProcess::MergedChannels);
+    process.start("python.exe", QStringList()<< info.absoluteFilePath() << path << variable << value << paste);
+    qDebug() << process.atEnd();
+    process.waitForFinished(-1);
+    QString output1(process.readAll());
+    qDebug() << output1;
+    //arangeValues1(output1);
 
-    //Upper limit
-    QLineSeries *USLseries = new QLineSeries();
-    USLseries->setName("USL");
-    USLseries->setPen(pen);
-    USLseries->setPointLabelsVisible(true);
-    USLseries->setPointLabelsClipping(false);
-    USLseries->setPointLabelsFont(labelFont);
-    USLseries->setPointLabelsFormat("@yPoint");
-    USLseries->append(1, talValues[1].toDouble());
-    USLseries->append(5, talValues[1].toDouble());
 
-    //setting the label of the x axis and the domain.
-    QValueAxis *axisX = new QValueAxis;
-    axisX->setTitleText("Termocouples");
-    axisX->setRange(0, 6);
-    axisX->setTickCount(7);
-    axisX->setLabelFormat("%d");
-
-    // Setting the label of the y axis and the range
-    QValueAxis *axisY = new QValueAxis;
-    axisY->setTitleText("Measurements (sec)");
-    axisY->setMax(120);
-    axisY->setTickCount(5);
-    axisY->setLabelFormat("%.1f");
-
-    // setting the chart
-    QChart *PSChart = new QChart();
-    PSChart->setTitle("TAL chart");
-    PSChart->legend()->hide();
-    // Adding the LSLseries
-    PSChart->addSeries(LSLseries);
-    PSChart->setAxisX(axisX,LSLseries);
-    PSChart->setAxisY(axisY,LSLseries);
-    // Adding the USLseries
-    PSChart->addSeries(USLseries);
-    PSChart->setAxisX(axisX,USLseries);
-    PSChart->setAxisY(axisY,USLseries);
-
-    // Initializing a chart view so later we can add it and make it visible.
-    QChartView *TALCV = new QChartView(PSChart);
-    TALCV->setRenderHint(QPainter::Antialiasing);
-
-    //creating new table next to the graph.
-    QTableWidget *TALTW = new QTableWidget(5, 6, this);
-    QStringList tableHeadersTitles = {"Termo-\ncouple","TAL","Min time\nabove liquid ","Max time\nabove liquid","UPCL","LPCL"};
-    TALTW->setHorizontalHeaderLabels(tableHeadersTitles);
-    TALTW->setEditTriggers(QAbstractItemView::NoEditTriggers);
-
-    QHeaderView *TALVHV = TALTW->verticalHeader();
-    TALVHV->setSectionResizeMode(QHeaderView::Stretch);
-    QHeaderView *TALHHV = TALTW -> horizontalHeader();
-    TALHHV->setSectionResizeMode(QHeaderView::Stretch);
-
-    //Setting the labels for the chart next to the graph.
-    QVBoxLayout *tableLabelLayout = new QVBoxLayout;
-    QLabel *titleLabel = new QLabel;
-    QFont titleFont("Helvetica", 16, QFont::Bold);
-    titleLabel->setFont(titleFont);
-    titleLabel->setText("Reflow Results");
-    titleLabel->setAlignment(Qt::AlignCenter);
-
-    tableLabelLayout->addWidget(titleLabel);
-    tableLabelLayout->addWidget(TALTW);
-
-    //makeWindow();
-    QHBoxLayout *layout = new QHBoxLayout;
-    layout->addWidget(TALCV);
-    layout->addLayout(tableLabelLayout);
-
-    // Set layout so we can se it in the interface.
-    QWidget *talWindow = new QWidget();
-    talWindow->setLayout(layout);
-    talWindow->setWindowTitle("TAL Results");
-    talWindow->resize(800,360);
-    talWindow->show();
 }
 
 void MainWindow::on_peakTempPBC_clicked()
 {
-    QStringList peakTempValues = getControlPeakTempValues();
-
-    //setting the font for the labels the font for all labels will be the same.
-    QFont labelFont("Helvetica", 15, QFont::Bold); // fonts for all the labels
-
-    //setting the color for the line in the graph also setting the width of this line.
-    QPen pen(Qt::green);
-    pen.setWidth(3);
-
-    //Lower limit
-    QLineSeries *LSLseries = new QLineSeries();
-    LSLseries->setName("LSL");
-    LSLseries->setPen(pen);
-    LSLseries->setPointLabelsVisible(true);
-    LSLseries->setPointLabelsClipping(true);
-    LSLseries->setPointLabelsFont(labelFont);
-    LSLseries->setPointLabelsFormat("@yPoint");
-    LSLseries->append(1, peakTempValues[0].toDouble());
-    LSLseries->append(5, peakTempValues[0].toDouble());
-
-    //Upper limit
-    QLineSeries *USLseries = new QLineSeries();
-    USLseries->setName("USL");
-    USLseries->setPen(pen);
-    USLseries->setPointLabelsVisible(true);
-    USLseries->setPointLabelsClipping(true);
-    USLseries->setPointLabelsFont(labelFont);
-    USLseries->setPointLabelsFormat("@yPoint");
-    USLseries->append(1, peakTempValues[1].toDouble());
-    USLseries->append(5, peakTempValues[1].toDouble());
+    QString value = ui->profileCBC->currentText();
+    QString paste = ui->solderPasteCBC->currentText();
+    QString variable = "Peak Temperature";
+    QString path = ui->lineEdit->text();
 
 
-    //setting the label of the x axis and the domain.
-    QValueAxis *axisX = new QValueAxis;
-    axisX->setTitleText("Termocouples");
-    axisX->setRange(0, 6);
-    axisX->setTickCount(7);
-    axisX->setLabelFormat("%d");
+    qDebug() << value;
+    qDebug() << paste;
+    qDebug() << variable;
+    qDebug() << path;
 
-    // Setting the label of the y axis and the range
-    QValueAxis *axisY = new QValueAxis;
-    axisY->setTitleText("Measurements (Cº)");
-    axisY->setMax(300);
-    axisY->setMin(200);
-    axisY->setTickCount(5);
-    axisY->setLabelFormat("%.1f");
+    QDir dir("C:/Users/Oliver y Ale/Desktop/sTostado-master/DAtaExtractionAndStatisticsCalculation");
+    //se obtiene el path de donde esta ubicada la aplicacion si se ponen los scripts python en el mismo lugar funciona,
+    QString dir1(QCoreApplication::applicationDirPath ());
+    QFileInfo info(dir1, "ControlProcessStatisticsCalculationComplete.py");
+    qDebug() << dir.exists() << info.exists();
+    QProcess process;
+    process.setProcessChannelMode(QProcess::MergedChannels);
+    process.start("python.exe", QStringList()<< info.absoluteFilePath() << path << variable << value << paste);
+    qDebug() << process.atEnd();
+    process.waitForFinished(-1);
+    QString output1(process.readAll());
+    qDebug() << output1;
+    //arangeValues1(output1);
 
-    // setting the chart
-    QChart *PSChart = new QChart();
-    PSChart->setTitle("Peak Temperature chart");
-    PSChart->legend()->hide();
-
-    // Adding the LSLseries
-    PSChart->addSeries(LSLseries);
-    PSChart->setAxisX(axisX,LSLseries);
-    PSChart->setAxisY(axisY,LSLseries);
-
-    // Adding the USLseries
-    PSChart->addSeries(USLseries);
-    PSChart->setAxisX(axisX,USLseries);
-    PSChart->setAxisY(axisY,USLseries);
-
-    // Initializing a chart view so later we can add it and make it visible.
-    QChartView *PeakTempCV = new QChartView(PSChart);
-    PeakTempCV->setRenderHint(QPainter::Antialiasing);
-
-    //creating new table next to the graph.
-    QTableWidget *PeakTempTW = new QTableWidget(5, 6, this);
-    QStringList tableHeadersTitles = {"Termo-\ncouple","Peak\nTemp","Min Peak\nTemp ","Max peak\nTemp","UPCL","LPCL"};
-    PeakTempTW->setHorizontalHeaderLabels(tableHeadersTitles);
-    PeakTempTW->setEditTriggers(QAbstractItemView::NoEditTriggers);
-
-    QHeaderView *PeakTempVHV = PeakTempTW->verticalHeader();
-    PeakTempVHV->setSectionResizeMode(QHeaderView::Stretch);
-    QHeaderView *PeakTempHHV = PeakTempTW -> horizontalHeader();
-    PeakTempHHV->setSectionResizeMode(QHeaderView::Stretch);
-
-    //Setting the labels for the chart next to the graph.
-    QVBoxLayout *tableLabelLayout = new QVBoxLayout;
-    QLabel *titleLabel = new QLabel;
-    QFont titleFont("Helvetica", 16, QFont::Bold);
-    titleLabel->setFont(titleFont);
-    titleLabel->setText("Reflow Results");
-    titleLabel->setAlignment(Qt::AlignCenter);
-
-    tableLabelLayout->addWidget(titleLabel);
-    tableLabelLayout->addWidget(PeakTempTW);
-
-    //makeWindow();
-    QHBoxLayout *layout = new QHBoxLayout;
-    layout->addWidget(PeakTempCV);
-    layout->addLayout(tableLabelLayout);
-
-
-    // Set layout so we can se it in the interface.
-    QWidget *peakTempWindow = new QWidget();
-    peakTempWindow->setLayout(layout);
-    peakTempWindow->setWindowTitle("Peak Temperature Results");
-    peakTempWindow->resize(100,900);
-    peakTempWindow->show();
 }
+
+
+
