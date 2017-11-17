@@ -9,13 +9,16 @@
 #include <QStringList>
 #include <QTableWidget>
 #include <QPalette>
-#include <QProcess>
-#include <QFileInfo>
 
 #include <QChart>
 #include <QtCharts/QChartView>
 #include <QtCharts/QLineSeries>
 #include <QtCharts/QValueAxis>
+#include <QtCharts/QScatterSeries>
+
+
+#include <QProcess>
+#include <QFileInfo>
 
 QT_CHARTS_USE_NAMESPACE
 
@@ -44,7 +47,11 @@ QStringList static picsGroup_Pics = {"Select Model...", "ARCT03327", "ARCT04573"
 QStringList static e6milGroup_E6mil = {"Select Model...", "ARCT03477", "ARCT03309", "ARCT02473", "ARCT03999"};
 
 
-
+QStringList static positiveSlopeValues = {};
+QStringList static peakTemperatureValues = {};
+QStringList static timeAboveValues = {};
+QStringList static ovenTempValues = {};
+QStringList static preControlLimits = {};
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -65,8 +72,20 @@ MainWindow::MainWindow(QWidget *parent) :
     // Set solder paste combox boxes unenabled because this is selected automatically
     ui->solderPasteCB->setEnabled(false);
     ui->solderPasteCBC->setEnabled(false);
+    ui->selectFilePB->setEnabled(false);
+    ui->savePB->setEnabled(false);
+    /*
+    QString pwd("");
+    char * PWD;
+    PWD = getenv ("PWD");
+    pwd.append(PWD);
+    qDebug() << "Working directory : " << pwd << flush;
+    */
 
     //ui->controlTabW->
+
+    //saveInfo();
+    arrengeStr();
 
 }
 
@@ -76,6 +95,136 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+
+
+/* **************************************************
+ * Start the code for the precontrol UI part
+ *
+ */
+
+
+void MainWindow::on_savePB_clicked()
+{
+    bool info = saveInfo();
+    ui->savePB->setEnabled(false);
+    QMessageBox msgBox;
+
+    if (info) {
+        msgBox.setText("Data was succesfully saved");
+        msgBox.exec();
+    } else {
+        msgBox.setText("An error occur trying to save data");
+        msgBox.exec();
+    }
+
+}
+
+
+bool MainWindow::saveInfo() {
+
+    QDir dir(".");
+    QString path = dir.absolutePath();
+    path = path + "/preControlData.txt";
+
+    QFile auxFile(path);
+
+    if (!auxFile.open(QIODevice::WriteOnly | QIODevice::Append)) {
+        return false;
+    }
+
+    QTextStream out(&auxFile);
+
+    //qDebug() << currentTexts();
+    //out << currentTexts();
+    out << currentTexts();
+
+    auxFile.close();
+    return true;
+}
+
+
+QString MainWindow::currentTexts() {
+    QString auxStr = "";
+
+    auxStr += ui->familyCB->currentText();
+    auxStr += "/";
+    auxStr += ui->groupCB->currentText();
+    auxStr += "/";
+    auxStr += ui->boardSideCB->currentText();
+    auxStr += "/";
+    auxStr += ui->modelCB->currentText();
+    auxStr += "/";
+    auxStr += ui->solderPasteCB->currentText();
+    auxStr += "/";
+    auxStr += ui->productionLineCB->currentText();
+    auxStr += "/";
+
+    auxStr += ui->tempTW->item(0,0)->text();
+    auxStr += "/";
+    auxStr += ui->tempTW->item(0,1)->text();
+    auxStr += "/";
+    auxStr += ui->tempTW->item(0,2)->text();
+    auxStr += "/";
+    auxStr += ui->tempTW->item(0,3)->text();
+    auxStr += "/";
+    auxStr += ui->tempTW->item(0,4)->text();
+    auxStr += "/";
+    auxStr += ui->tempTW->item(0,5)->text();
+    auxStr += "/";
+    auxStr += ui->tempTW->item(0,6)->text();
+    auxStr += "/";
+    auxStr += ui->tempTW->item(0,7)->text();
+    auxStr += "/";
+    auxStr += ui->tempTW->item(0,8)->text();
+    auxStr += "/";
+    auxStr += ui->tempTW->item(0,9)->text();
+    auxStr += "/";
+
+    auxStr += ui->parametersTW->item(0,0)->text();
+    auxStr += "/";
+    auxStr += ui->parametersTW->item(1,0)->text();
+    auxStr += "/";
+    auxStr += ui->parametersTW->item(2,0)->text();
+    auxStr += "/";
+    auxStr += ui->parametersTW->item(3,0)->text();
+    auxStr += "/";
+    auxStr += ui->parametersTW->item(4,0)->text();
+    auxStr += "/";
+    auxStr += ui->parametersTW->item(5,0)->text();
+    auxStr += "/";
+
+    for (int i = 0; i<positiveSlopeValues.length(); ++i) {
+        auxStr += positiveSlopeValues[i];
+        auxStr += "/";
+    }
+
+    for (int i = 0; i<timeAboveValues.length(); ++i) {
+        auxStr += timeAboveValues[i];
+        auxStr += "/";
+    }
+
+    for (int i = 0; i<peakTemperatureValues.length(); ++i) {
+        auxStr += peakTemperatureValues[i];
+        auxStr += "/";
+    }
+
+    for (int i = 0; i<ovenTempValues.length(); ++i) {
+        auxStr += ovenTempValues[i];
+        auxStr += "/";
+    }
+
+    for (int i = 0; i<ovenTempValues.length(); ++i) {
+        auxStr += ovenTempValues[i];
+        auxStr += "/";
+    }
+
+    for (int i = 0; i<preControlLimits.length(); ++i) {
+        auxStr += preControlLimits[i];
+    }
+    auxStr += "\n";
+
+    return auxStr;
+}
 
 
 void MainWindow::setDefaultParametersTW() {
@@ -114,6 +263,61 @@ void MainWindow::setDefaultTempTW() {
 }
 
 
+void MainWindow::arrengeStr() {
+    QString auxStr = "A\r\n1.52\r\n1.65\r\n1.61\r\n1.57\r\n1.72\r\nB\r\n67.90\r\n65.00\r\n65.40\r\n64.00\r\n67.10\r\nC\r\n241.7\r\n239.9\r\n239.4\r\n241.3\r\n241.6\r\nD\r\n0120\r\n0130\r\n0155\r\n0180\r\n0190\r\n0215\r\n0230\r\n0235\r\n0245\r\n0275\r\nE\r\n1.325\r\n0.9750000000000001\r\n75.0\r\n45.0\r\n249.25\r\n237.75\r\n";
+    int bPos = auxStr.indexOf("B");
+    int cPos = auxStr.indexOf("C");
+    int dPos = auxStr.indexOf("D");
+    int ePos = auxStr.indexOf("E");
+
+
+    int difCB = cPos - bPos;
+    int difDC = dPos - cPos;
+    int difED = ePos - dPos;
+
+    QString PSValues = auxStr.mid(0,bPos);
+    QString TALValues = auxStr.mid(bPos,difCB);
+    QString PTVAlues = auxStr.mid(cPos,difDC);
+    QString OTValues = auxStr.mid(dPos,difED);
+    QString preControlLimitsValues = auxStr.mid(ePos,auxStr.length()-ePos);
+
+
+    positiveSlopeValues = getStringValues(PSValues);
+    timeAboveValues = getStringValues(TALValues);
+    peakTemperatureValues = getStringValues(PTVAlues);
+    ovenTempValues = getStringValues(OTValues);
+    preControlLimits = getStringValues(preControlLimitsValues);
+}
+
+
+QStringList MainWindow::getStringValues(QString& str) {
+    QStringList  stringValues;
+    bool intFlag = false;
+    bool strFlag = false;
+
+    QString auxStr = "";
+
+    for (int i = 0; i<str; ++i) {
+
+        if (str[i].isDigit() or str[i] == '.') {
+            intFlag = true;
+            auxStr += str[i];
+            strFlag = true;
+        } else {
+            intFlag = false;
+        }
+
+
+        if (intFlag == false and strFlag == true) {
+            stringValues.append(auxStr);
+            auxStr = "";
+            strFlag = false;
+        }
+    }
+
+    //qDebug() << stringValues[0] << stringValues[1] << stringValues[2] << stringValues[3] << stringValues[4];
+    return stringValues;
+}
 
 void MainWindow::on_familyCB_activated(int index)
 {
@@ -227,111 +431,80 @@ void MainWindow::on_selectFilePB_clicked()
      *
      */
 
+
     QString fileName = QFileDialog::getOpenFileName(this,
-        tr("Jajaja"), "/Users/Fer/Downloads",
-        tr("All Files (*)"));
-    //Obtencion de parametros necesarios para el codigo python.
-    QString Name = QFileInfo(fileName).fileName();
-    QFileInfo  info(fileName);
-    QString correctfileName = info.path();
-    correctfileName.remove(0,2);
+        tr(""), "/Users/Fer/Desktop",
+        tr("(*)"));
 
-    QString paste = ui->solderPasteCB->currentText();
+    if (fileName.isEmpty()) {
+        return;
+    } else {
+        QDir dir(".");
+        QString path = dir.absolutePath();
 
-    if (fileName.isEmpty())
-            return;
-        else {
-            //Codigo necesario para utilizar script python.
-            qDebug() << correctfileName;
-            qDebug() << Name;
-            qDebug() << paste;
-            QDir dir("C:/Users/Oliver y Ale/Desktop/sTostado-master/DAtaExtractionAndStatisticsCalculation");
-            //se obtiene el path de donde esta ubicada la aplicacion si se ponen los scripts python en el mismo lugar funciona,
-            QString dir1(QCoreApplication::applicationDirPath ());
-            QFileInfo info(dir1, "PreControProcessStatisticsCalculationCompleted.py");
-            qDebug() << dir.exists() << info.exists();
-            QProcess process;
-            process.setProcessChannelMode(QProcess::MergedChannels);
-            process.start("python.exe", QStringList()<< info.absoluteFilePath() << correctfileName << Name << paste);
-            qDebug() << process.atEnd();
-            process.waitForFinished(-1);
-            QString output(process.readAll());
-            
-            //Obtencion de datos del output del script python.
-            int indexTempData = output.indexOf("Temperature Data: ",1);
-            QString TempData = output.mid(indexTempData,68);
-            QString TempData1 = TempData.mid(18,4);
-            QString TempData2 = TempData.mid(23,4);
-            QString TempData3 = TempData.mid(28,4);
-            QString TempData4 = TempData.mid(33,4);
-            QString TempData5 = TempData.mid(38,4);
-            QString TempData6 = TempData.mid(43,4);
-            QString TempData7 = TempData.mid(48,4);
-            QString TempData8 = TempData.mid(53,4);
-            QString TempData9 = TempData.mid(58,4);
-            QString TempData10 = TempData.mid(63,4);
+        QString Name = QFileInfo(fileName).fileName();
+        QFileInfo info(fileName);
+        QString correctfileName = info.path();
+        QString selectedPaste = ui->solderPasteCB->currentText();
 
-            int indexPositiveSl = output.indexOf("Positive Slope: ",1);
-            QString PositiveSl = output.mid(indexPositiveSl,40);
-            QString PositiveSl1 = PositiveSl.mid(16,4);
-            QString PositiveSl2 = PositiveSl.mid(21,4);
-            QString PositiveSl3 = PositiveSl.mid(26,4);
-            QString PositiveSl4 = PositiveSl.mid(31,4);
-            QString PositiveSl5 = PositiveSl.mid(36,4);
+        //qDebug() << Name;
+        //qDebug() << correctfileName;
+        //qDebug() << selectedPaste;
 
-            int indexTimeAboveL = output.indexOf("Time Above Liquids: ",1);
-            QString TimeAboveL = output.mid(indexTimeAboveL,50);
-            QString TimeAboveL1 = TimeAboveL.mid(20,5);
-            QString TimeAboveL2 = TimeAboveL.mid(26,5);
-            QString TimeAboveL3 = TimeAboveL.mid(32,5);
-            QString TimeAboveL4 = TimeAboveL.mid(38,5);
-            QString TimeAboveL5 = TimeAboveL.mid(44,5);
+        //QString dir1(QCoreApplication::applicationDirPath());
+        QFileInfo info2(path, "preControl.py");
 
-            int indexPeakTemp = output.indexOf("Peak Temperature: ",1);
-            QString PeakTemp = output.mid(indexPeakTemp,48);
-            QString PeakTemp1 = PeakTemp.mid(18,5);
-            QString PeakTemp2 = PeakTemp.mid(24,5);
-            QString PeakTemp3 = PeakTemp.mid(30,5);
-            QString PeakTemp4 = PeakTemp.mid(36,5);
-            QString PeakTemp5 = PeakTemp.mid(42,5);
+        //qDebug() << path;
+        //qDebug() << info.absoluteFilePath();
+        //qDebug() << Name;
 
-            /*qDebug() << PeakTemp;
-            qDebug() << PeakTemp1;
-            qDebug() << PeakTemp2;
-            qDebug() << PeakTemp3;
-            qDebug() << PeakTemp4;
-            qDebug() << PeakTemp5;*/
+        //qDebug() << dir.exists();
+        //qDebug() << info.exists();
 
 
-            /*qDebug() << TimeAboveL;
-            qDebug() << TimeAboveL1;
-            qDebug() << TimeAboveL2;
-            qDebug() << TimeAboveL3;
-            qDebug() << TimeAboveL4;
-            qDebug() << TimeAboveL5;*/
+        QProcess auxProcess;
+        auxProcess.setProcessChannelMode(QProcess::MergedChannels);
+        auxProcess.start("./ ", QStringList() << dir.absolutePath() << correctfileName << Name << selectedPaste);
+        //qDebug() << auxProcess.atEnd();
 
-            /*qDebug() << PositiveSl1;
-            qDebug() << PositiveSl2;
-            qDebug() << PositiveSl3;
-            qDebug() << PositiveSl4;
-            qDebug() << PositiveSl5;*/
+        auxProcess.waitForFinished(-1);
+        QString output(auxProcess.readAll());
 
-         /* qDebug() << TempData;
-            qDebug() << TempData1;
-            qDebug() << TempData2;
-            qDebug() << TempData3;
-            qDebug() << TempData4;
-            qDebug() << TempData5;
-            qDebug() << TempData6;
-            qDebug() << TempData7;
-            qDebug() << TempData8;
-            qDebug() << TempData9;
-            qDebug() << TempData10;*/
-            qDebug() << output;
-           
+        //qDebug() << "data:";
+        //qDebug() << output;
+
+        arrengeStr();
+
+        updateTempTW(ovenTempValues);
+    }
+
+        /*
+         //qDebug() << correctfileName;
+         //qDebug() << Name;
+         //qDebug() << paste;
+
+         //QDir dir("C:/Users/Oliver y Ale/Desktop/sTostado-master/DAtaExtractionAndStatisticsCalculation");
+         +            //se obtiene el path de donde esta ubicada la aplicacion si se ponen los scripts python en el mismo lugar funciona,
+         //QString dir1(QCoreApplication::applicationDirPath ());
+
+         +            //QFileInfo info(dir1, "PreControProcessStatisticsCalculationCompleted.py");
+         +            //qDebug() << dir.exists() << info.exists();
+
+         +            QProcess process;
+         +            process.setProcessChannelMode(QProcess::MergedChannels);
+         +            process.start("python.exe", QStringList()<< info.absoluteFilePath() << correctfileName << Name << paste);
+         +            qDebug() << process.atEnd();
+         +            process.waitForFinished(-1);
+         +            QString output(process.readAll());
+
+            QFileInfo info
 
             QFile file(fileName);
 
+            */
+
+
+            /*
             if (!file.open(QIODevice::ReadOnly)) {
                 QMessageBox::information(this, tr("Unable to open file"),
                     file.errorString());
@@ -346,13 +519,14 @@ void MainWindow::on_selectFilePB_clicked()
                 //in >> auxGraph;
             }
 
-            /*
+
             if (auxGraph.node.isEmpty()) {
                 QMessageBox::information(this, tr("No grafo en el archivo"),
                     tr("The file you are attempting to open contains no info."));
             }
-            */
+
         }
+        */
 }
 
 
@@ -480,18 +654,67 @@ void MainWindow::on_positiveSlopePB_clicked()
 
     // Setting Specification Limits (LSL & USL)
     QPen pen(Qt::yellow);
-    pen.setWidth(3);
+    pen.setWidth(2);
+
+    // AGREGAR
+    QPen limitPen(Qt::green);
+    limitPen.setWidth(2);
+    // AGREGAR
+    QPen PSPen(Qt::blue);
+    PSPen.setWidth(2);
+    // AGREGAR
+    int len = positiveSlopeValues.length();
+
+    // AGREGAR
+    QLineSeries *postiveSlopeSeries = new QLineSeries();
+    postiveSlopeSeries->setName("Positve Slope");
+    postiveSlopeSeries->setPen(PSPen);
+    postiveSlopeSeries->setPointLabelsVisible(true);
+    postiveSlopeSeries->setPointLabelsClipping(false);
+    postiveSlopeSeries->setPointLabelsFont(labelFont);
+    postiveSlopeSeries->setPointLabelsFormat("@yPoint");
+
+    for(int i = 0; i<len; ++i) {
+        postiveSlopeSeries->append(i+1, positiveSlopeValues[i].toDouble());
+    }
+
+
+
+    // AGREGAR
+    QLineSeries *UPSLSeries = new QLineSeries();
+    UPSLSeries->setName("UPSL");
+    UPSLSeries->setPen(limitPen);
+    UPSLSeries->setPointLabelsVisible(false);
+    UPSLSeries->setPointLabelsClipping(false);
+    UPSLSeries->setPointLabelsFont(labelFont);
+    UPSLSeries->setPointLabelsFormat("@yPoint");
+    UPSLSeries->append(1, preControlLimits[1].toDouble());
+    UPSLSeries->append(len, preControlLimits[1].toDouble());
+
+    // AGREGAR
+    QLineSeries *LPSLSeries = new QLineSeries();
+    LPSLSeries->setName("UPSL");
+    LPSLSeries->setPen(limitPen);
+    LPSLSeries->setPointLabelsVisible(false);
+    LPSLSeries->setPointLabelsClipping(false);
+    LPSLSeries->setPointLabelsFont(labelFont);
+    LPSLSeries->setPointLabelsFormat("@yPoint");
+    LPSLSeries->append(1, preControlLimits[0].toDouble());
+    LPSLSeries->append(len, preControlLimits[0].toDouble());
+
+
 
     // LSL line (Lower Specification Limit)
     QLineSeries *LSLseries = new QLineSeries();
     LSLseries->setName("LSL");
     LSLseries->setPen(pen);
     LSLseries->setPointLabelsVisible(true);
-    LSLseries->setPointLabelsClipping(true);
+    LSLseries->setPointLabelsClipping(false);
     LSLseries->setPointLabelsFont(labelFont);
     LSLseries->setPointLabelsFormat("@yPoint");
     LSLseries->append(1, riseValues[0].toDouble());
-    LSLseries->append(5, riseValues[0].toDouble());
+    LSLseries->append(len, riseValues[0].toDouble());
+
 
 
     // USL line (Upper Specification Limit)
@@ -499,19 +722,21 @@ void MainWindow::on_positiveSlopePB_clicked()
     USLseries->setName("USL");
     USLseries->setPen(pen);
     USLseries->setPointLabelsVisible(true);
-    USLseries->setPointLabelsClipping(true);
+    USLseries->setPointLabelsClipping(false);
     USLseries->setPointLabelsFont(labelFont);
     USLseries->setPointLabelsFormat("@yPoint");
     USLseries->append(1, riseValues[1].toDouble());
-    USLseries->append(5, riseValues[1].toDouble());
+    USLseries->append(len, riseValues[1].toDouble());
+
 
 
     // Setting the axis for the chart
     // Axis X
+    // AGREGAR
     QValueAxis *axisX = new QValueAxis;
     axisX->setTitleText("Termocouples");
-    axisX->setRange(0, 6);
-    axisX->setTickCount(7);
+    axisX->setRange(0, len+1);
+    axisX->setTickCount(len+1);
     axisX->setLabelFormat("%d");
 
     // Axis Y
@@ -521,26 +746,51 @@ void MainWindow::on_positiveSlopePB_clicked()
     axisY->setTickCount(5);
     axisY->setLabelFormat("%.1f");
 
-
+    // AGREGAR
     // Creating the chart
     QChart *PSChart = new QChart();
     PSChart->setTitle("Positive Slope Chart");
     PSChart->legend()->hide();
     // Adding the LSLseries
     PSChart->addSeries(LSLseries);
+    PSChart->addSeries(USLseries);
+    PSChart->addSeries(postiveSlopeSeries);
+    PSChart->addSeries(UPSLSeries);
+    PSChart->addSeries(LPSLSeries);
+
+    PSChart->setAxisX(axisX,postiveSlopeSeries);
+    PSChart->setAxisY(axisY,postiveSlopeSeries);
+
     PSChart->setAxisX(axisX,LSLseries);
     PSChart->setAxisY(axisY,LSLseries);
-    // Adding the USLseries
-    PSChart->addSeries(USLseries);
+
     PSChart->setAxisX(axisX,USLseries);
     PSChart->setAxisY(axisY,USLseries);
+
+    PSChart->setAxisX(axisX,UPSLSeries);
+    PSChart->setAxisY(axisY,UPSLSeries);
+
+    PSChart->setAxisX(axisX,LPSLSeries);
+    PSChart->setAxisY(axisY,LPSLSeries);
+
+    //PSChart->addSeries(postiveSlopeSeries);
+
+
+    // Adding the USLseries
+    //PSChart->addSeries(USLseries);
+    //PSChart->setAxisX(axisX,USLseries);
+    //PSChart->setAxisY(axisY,USLseries);
+
+
+    //PSChart->setAxisX(axisX,postiveSlopeSeries);
+    //PSChart->setAxisX(axisX,postiveSlopeSeries);
 
     // Initializing a chart view with our setted PSChart
     QChartView *positiveSlopeCV = new QChartView(PSChart);
     positiveSlopeCV->setRenderHint(QPainter::Antialiasing);
 
 
-    QTableWidget *positiveSlopeTW = new QTableWidget(5, 6, this);
+    QTableWidget *positiveSlopeTW = new QTableWidget(len, 6, this);
     QStringList tableHeadersTitles = {"Termo-\ncouple","Positive\n Slope","Minimum\nrise slope","Maximum\nrise slope","UPCL","LPCL"};
     positiveSlopeTW->setHorizontalHeaderLabels(tableHeadersTitles);
     positiveSlopeTW->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -549,6 +799,31 @@ void MainWindow::on_positiveSlopePB_clicked()
     positiveSlopeVHV->setSectionResizeMode(QHeaderView::Stretch);
     QHeaderView *positiveSlopeHHV = positiveSlopeTW -> horizontalHeader();
     positiveSlopeHHV->setSectionResizeMode(QHeaderView::Stretch);
+
+    /*
+    for (int i = 0; i<10; i++) {
+        QTableWidgetItem  *auxCellTWI = new QTableWidgetItem(values[i]);
+        auxCellTWI->setTextAlignment(Qt::AlignCenter);
+        ui->tempTW->setItem(0,i, auxCellTWI);
+    }*/
+
+    QStringList PSlParameters = {riseValues[0],riseValues[1], preControlLimits[1], preControlLimits[0]};
+
+    for (int i = 0; i<len; ++i) {
+        for (int j = 0; j<6; ++j) {
+            QTableWidgetItem  *auxCellTWP = new QTableWidgetItem();
+            if (j == 0) {
+                QString value = QString::number(i+1);
+                auxCellTWP->setText(value);
+            } else if (j == 1) {
+                auxCellTWP->setText(positiveSlopeValues[i]);
+            } else {
+                auxCellTWP->setText(PSlParameters[j-2]);
+            }
+            auxCellTWP->setTextAlignment(Qt::AlignCenter);
+            positiveSlopeTW->setItem(i,j, auxCellTWP);
+        }
+    }
 
 
     QVBoxLayout *tableLabelLayout = new QVBoxLayout;
@@ -579,6 +854,7 @@ void MainWindow::on_positiveSlopePB_clicked()
 //Graph and table showed by clicking TAL Results Button
 void MainWindow::on_TALPB_clicked()
 {
+
     QStringList timeValues = getTimeAboveValues(); //getting value from acceptable parameters.
 
      //setting the font for the labels the font for all labels will be the same.
@@ -586,7 +862,50 @@ void MainWindow::on_TALPB_clicked()
 
      //setting the color for the line in the graph also setting the width of this line.
      QPen pen(Qt::yellow);
-     pen.setWidth(3);
+     pen.setWidth(2);
+
+     QPen limitPen(Qt::green);
+     limitPen.setWidth(2);
+
+     QPen TALPen(Qt::blue);
+     TALPen.setWidth(2);
+
+     int len = timeAboveValues.length();
+
+
+     QLineSeries *TALSeries = new QLineSeries();
+     TALSeries->setName("TAL");
+     TALSeries->setPen(TALPen);
+     TALSeries->setPointLabelsVisible(true);
+     TALSeries->setPointLabelsClipping(false);
+     TALSeries->setPointLabelsFont(labelFont);
+     TALSeries->setPointLabelsFormat("@yPoint");
+
+     for(int i = 0; i<len; ++i) {
+         TALSeries->append(i+1, timeAboveValues[i].toDouble());
+     }
+
+
+     QLineSeries *UPSLSeries = new QLineSeries();
+     UPSLSeries->setName("UPSL");
+     UPSLSeries->setPen(limitPen);
+     UPSLSeries->setPointLabelsVisible(false);
+     UPSLSeries->setPointLabelsClipping(false);
+     UPSLSeries->setPointLabelsFont(labelFont);
+     UPSLSeries->setPointLabelsFormat("@yPoint");
+     UPSLSeries->append(1, preControlLimits[2].toDouble());
+     UPSLSeries->append(len, preControlLimits[2].toDouble());
+
+     QLineSeries *LPSLSeries = new QLineSeries();
+     LPSLSeries->setName("UPSL");
+     LPSLSeries->setPen(limitPen);
+     LPSLSeries->setPointLabelsVisible(false);
+     LPSLSeries->setPointLabelsClipping(false);
+     LPSLSeries->setPointLabelsFont(labelFont);
+     LPSLSeries->setPointLabelsFormat("@yPoint");
+     LPSLSeries->append(1, preControlLimits[3].toDouble());
+     LPSLSeries->append(len, preControlLimits[3].toDouble());
+
 
      //Lower limit
      QLineSeries *LSLseries = new QLineSeries();
@@ -613,8 +932,8 @@ void MainWindow::on_TALPB_clicked()
      //setting the label of the x axis and the domain.
      QValueAxis *axisX = new QValueAxis;
      axisX->setTitleText("Termocouples");
-     axisX->setRange(0, 6);
-     axisX->setTickCount(7);
+     axisX->setRange(0, len+1);
+     axisX->setTickCount(len+1);
      axisX->setLabelFormat("%d");
 
      // Setting the label of the y axis and the range
@@ -628,14 +947,28 @@ void MainWindow::on_TALPB_clicked()
      QChart *PSChart = new QChart();
      PSChart->setTitle("TAL chart");
      PSChart->legend()->hide();
-     // Adding the LSLseries
+
      PSChart->addSeries(LSLseries);
+     PSChart->addSeries(USLseries);
+     PSChart->addSeries(TALSeries);
+     PSChart->addSeries(UPSLSeries);
+     PSChart->addSeries(LPSLSeries);
+
+     PSChart->setAxisX(axisX,TALSeries);
+     PSChart->setAxisY(axisY,TALSeries);
+
      PSChart->setAxisX(axisX,LSLseries);
      PSChart->setAxisY(axisY,LSLseries);
-     // Adding the USLseries
-     PSChart->addSeries(USLseries);
+
      PSChart->setAxisX(axisX,USLseries);
      PSChart->setAxisY(axisY,USLseries);
+
+     PSChart->setAxisX(axisX,UPSLSeries);
+     PSChart->setAxisY(axisY,UPSLSeries);
+
+     PSChart->setAxisX(axisX,LPSLSeries);
+     PSChart->setAxisY(axisY,LPSLSeries);
+
 
      // Initializing a chart view so later we can add it and make it visible.
      QChartView *TALCV = new QChartView(PSChart);
@@ -651,6 +984,26 @@ void MainWindow::on_TALPB_clicked()
      TALVHV->setSectionResizeMode(QHeaderView::Stretch);
      QHeaderView *TALHHV = TALTW -> horizontalHeader();
      TALHHV->setSectionResizeMode(QHeaderView::Stretch);
+
+
+     QStringList TALParameters = {timeValues[0],timeValues[1], preControlLimits[2], preControlLimits[3]};
+
+     for (int i = 0; i<len; ++i) {
+         for (int j = 0; j<6; ++j) {
+             QTableWidgetItem  *auxCellTWP = new QTableWidgetItem();
+             if (j == 0) {
+                 QString value = QString::number(i+1);
+                 auxCellTWP->setText(value);
+             } else if (j == 1) {
+                 auxCellTWP->setText(positiveSlopeValues[i]);
+             } else {
+                 auxCellTWP->setText(TALParameters[j-2]);
+             }
+             auxCellTWP->setTextAlignment(Qt::AlignCenter);
+             TALTW->setItem(i,j, auxCellTWP);
+         }
+     }
+
 
      //Setting the labels for the chart next to the graph.
      QVBoxLayout *tableLabelLayout = new QVBoxLayout;
@@ -669,11 +1022,11 @@ void MainWindow::on_TALPB_clicked()
      layout->addLayout(tableLabelLayout);
 
      // Set layout so we can se it in the interface.
-     QWidget *posSlopeWindow = new QWidget();
-     posSlopeWindow->setLayout(layout);
-     posSlopeWindow->setWindowTitle("TAL Results");
-     posSlopeWindow->resize(800,360);
-     posSlopeWindow->show();
+     QWidget *talWindow = new QWidget();
+     talWindow->setLayout(layout);
+     talWindow->setWindowTitle("TAL Results");
+     talWindow->resize(800,360);
+     talWindow->show();
 
 }
 
@@ -686,8 +1039,49 @@ void MainWindow::on_peakTempPB_clicked()
     QFont labelFont("Helvetica", 15, QFont::Bold); // fonts for all the labels
 
     //setting the color for the line in the graph also setting the width of this line.
-    QPen pen(Qt::green);
-    pen.setWidth(3);
+    QPen pen(Qt::yellow);
+    pen.setWidth(2);
+
+    QPen limitPen(Qt::green);
+    limitPen.setWidth(2);
+
+    QPen peakTempPen(Qt::blue);
+    peakTempPen.setWidth(2);
+
+    int len = peakTemperatureValues.length();
+
+    QLineSeries *peakTempSeries = new QLineSeries();
+    peakTempSeries->setName("TAL");
+    peakTempSeries->setPen(peakTempPen);
+    peakTempSeries->setPointLabelsVisible(true);
+    peakTempSeries->setPointLabelsClipping(false);
+    peakTempSeries->setPointLabelsFont(labelFont);
+    peakTempSeries->setPointLabelsFormat("@yPoint");
+
+    for(int i = 0; i<len; ++i) {
+        peakTempSeries->append(i+1, peakTemperatureValues[i].toDouble());
+    }
+
+
+    QLineSeries *UPSLSeries = new QLineSeries();
+    UPSLSeries->setName("UPSL");
+    UPSLSeries->setPen(limitPen);
+    UPSLSeries->setPointLabelsVisible(false);
+    UPSLSeries->setPointLabelsClipping(false);
+    UPSLSeries->setPointLabelsFont(labelFont);
+    UPSLSeries->setPointLabelsFormat("@yPoint");
+    UPSLSeries->append(1, preControlLimits[4].toDouble());
+    UPSLSeries->append(len, preControlLimits[4].toDouble());
+
+    QLineSeries *LPSLSeries = new QLineSeries();
+    LPSLSeries->setName("UPSL");
+    LPSLSeries->setPen(limitPen);
+    LPSLSeries->setPointLabelsVisible(false);
+    LPSLSeries->setPointLabelsClipping(false);
+    LPSLSeries->setPointLabelsFont(labelFont);
+    LPSLSeries->setPointLabelsFormat("@yPoint");
+    LPSLSeries->append(1, preControlLimits[5].toDouble());
+    LPSLSeries->append(len, preControlLimits[5].toDouble());
 
     //Lower limit
     QLineSeries *LSLseries = new QLineSeries();
@@ -732,15 +1126,27 @@ void MainWindow::on_peakTempPB_clicked()
     PSChart->setTitle("Peak Temperature chart");
     PSChart->legend()->hide();
 
-    // Adding the LSLseries
     PSChart->addSeries(LSLseries);
+    PSChart->addSeries(USLseries);
+    PSChart->addSeries(peakTempSeries);
+    PSChart->addSeries(UPSLSeries);
+    PSChart->addSeries(LPSLSeries);
+
+    PSChart->setAxisX(axisX,peakTempSeries);
+    PSChart->setAxisY(axisY,peakTempSeries);
+
     PSChart->setAxisX(axisX,LSLseries);
     PSChart->setAxisY(axisY,LSLseries);
 
-    // Adding the USLseries
-    PSChart->addSeries(USLseries);
     PSChart->setAxisX(axisX,USLseries);
     PSChart->setAxisY(axisY,USLseries);
+
+    PSChart->setAxisX(axisX,UPSLSeries);
+    PSChart->setAxisY(axisY,UPSLSeries);
+
+    PSChart->setAxisX(axisX,LPSLSeries);
+    PSChart->setAxisY(axisY,LPSLSeries);
+
 
     // Initializing a chart view so later we can add it and make it visible.
     QChartView *PeakTempCV = new QChartView(PSChart);
@@ -756,6 +1162,26 @@ void MainWindow::on_peakTempPB_clicked()
     PeakTempVHV->setSectionResizeMode(QHeaderView::Stretch);
     QHeaderView *PeakTempHHV = PeakTempTW -> horizontalHeader();
     PeakTempHHV->setSectionResizeMode(QHeaderView::Stretch);
+
+
+
+    QStringList PTParameters = {peakTempValues[0],peakTempValues[1], preControlLimits[4], preControlLimits[5]};
+
+    for (int i = 0; i<len; ++i) {
+        for (int j = 0; j<6; ++j) {
+            QTableWidgetItem  *auxCellTWP = new QTableWidgetItem();
+            if (j == 0) {
+                QString value = QString::number(i+1);
+                auxCellTWP->setText(value);
+            } else if (j == 1) {
+                auxCellTWP->setText(positiveSlopeValues[i]);
+            } else {
+                auxCellTWP->setText(PTParameters[j-2]);
+            }
+            auxCellTWP->setTextAlignment(Qt::AlignCenter);
+            PeakTempTW->setItem(i,j, auxCellTWP);
+        }
+    }
 
     //Setting the labels for the chart next to the graph.
     QVBoxLayout *tableLabelLayout = new QVBoxLayout;
@@ -775,11 +1201,11 @@ void MainWindow::on_peakTempPB_clicked()
 
 
     // Set layout so we can se it in the interface.
-    QWidget *posSlopeWindow = new QWidget();
-    posSlopeWindow->setLayout(layout);
-    posSlopeWindow->setWindowTitle("Peak Temperature Results");
-    posSlopeWindow->resize(800,360);
-    posSlopeWindow->show();
+    QWidget *peakTempWindow = new QWidget();
+    peakTempWindow->setLayout(layout);
+    peakTempWindow->setWindowTitle("Peak Temperature Results");
+    peakTempWindow->resize(800,500);
+    peakTempWindow->show();
 }
 
 void MainWindow::on_cleanPB_clicked()
@@ -795,6 +1221,27 @@ void MainWindow::on_cleanPB_clicked()
     ui->familyCB->setCurrentIndex(0);
     ui->boardSideCB->setCurrentIndex(0);
     ui->productionLineCB->setCurrentIndex(0);
+    ui->selectFilePB->setEnabled(false);
+}
+
+
+
+void MainWindow::on_productionLineCB_activated(int index)
+{
+    if (ui->familyCB->currentIndex() != 0) {
+        if (ui->groupCB->currentIndex() != 0) {
+            if (ui->boardSideCB->currentIndex() != 0) {
+                if (ui->modelCB->currentIndex() != 0) {
+                    if (ui->solderPasteCB->currentIndex() != 0) {
+                        if (index != 0) {
+                            ui->selectFilePB->setEnabled(true);
+                            ui->savePB->setEnabled(true);
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 
@@ -803,6 +1250,29 @@ void MainWindow::on_cleanPB_clicked()
  * Start the code for the control UI part
  *
  */
+
+
+
+QStringList MainWindow::getControlPeakTempValues() {
+
+    QString mimTime = ui->parametersTWC->item(2,0)->text();
+    QString maxTime = ui->parametersTWC->item(3,0)->text();
+
+    QStringList timeValues = {mimTime, maxTime};
+
+    return timeValues;
+}
+
+
+QStringList MainWindow::getControlTimeAboveValues() {
+
+    QString mimTime = ui->parametersTWC->item(0,0)->text();
+    QString maxTime = ui->parametersTWC->item(1,0)->text();
+
+    QStringList timeValues = {mimTime, maxTime};
+
+    return timeValues;
+}
 
 void MainWindow::updateParametersTWC(QStringList &values) {
 
@@ -1018,56 +1488,207 @@ void MainWindow::on_cleanPBC_clicked()
     ui->profileCBC->setCurrentIndex(0);
 }
 
+
+
 void MainWindow::on_TALPBC_clicked()
 {
-    QString value = ui->profileCBC->currentText();
-    QString paste = ui->solderPasteCBC->currentText();
-    QString variable = "Time Above Liquids";
-    QString path = ui->lineEdit->text();
+    QStringList talValues = getControlTimeAboveValues();
 
+    //setting the font for the labels the font for all labels will be the same.
+    QFont labelFont("Helvetica", 15, QFont::Bold); // fonts for all the labels
 
-    qDebug() << value;
-    qDebug() << paste;
-    qDebug() << variable;
-    qDebug() << path;
+    //setting the color for the line in the graph also setting the width of this line.
+    QPen pen(Qt::yellow);
+    pen.setWidth(3);
 
-    QDir dir("C:/Users/Oliver y Ale/Desktop/sTostado-master/DAtaExtractionAndStatisticsCalculation");
-    //se obtiene el path de donde esta ubicada la aplicacion si se ponen los scripts python en el mismo lugar funciona,
-    QString dir1(QCoreApplication::applicationDirPath ());
-    QFileInfo info(dir1, "ControlProcessStatisticsCalculationComplete.py");
-    qDebug() << dir.exists() << info.exists();
-    QProcess process;
-    process.setProcessChannelMode(QProcess::MergedChannels);
-    process.start("python.exe", QStringList()<< info.absoluteFilePath() << path << variable << value << paste);
-    qDebug() << process.atEnd();
-    process.waitForFinished(-1);
-    QString output(process.readAll());
+    //Lower limit
+    QLineSeries *LSLseries = new QLineSeries();
+    LSLseries->setName("LSL");
+    LSLseries->setPen(pen);
+    LSLseries->setPointLabelsVisible(true);
+    LSLseries->setPointLabelsClipping(false);
+    LSLseries->setPointLabelsFont(labelFont);
+    LSLseries->setPointLabelsFormat("@yPoint");
+    LSLseries->append(1, talValues[0].toDouble());
+    LSLseries->append(5, talValues[0].toDouble());
 
+    //Upper limit
+    QLineSeries *USLseries = new QLineSeries();
+    USLseries->setName("USL");
+    USLseries->setPen(pen);
+    USLseries->setPointLabelsVisible(true);
+    USLseries->setPointLabelsClipping(false);
+    USLseries->setPointLabelsFont(labelFont);
+    USLseries->setPointLabelsFormat("@yPoint");
+    USLseries->append(1, talValues[1].toDouble());
+    USLseries->append(5, talValues[1].toDouble());
 
+    //setting the label of the x axis and the domain.
+    QValueAxis *axisX = new QValueAxis;
+    axisX->setTitleText("Termocouples");
+    axisX->setRange(0, 6);
+    axisX->setTickCount(7);
+    axisX->setLabelFormat("%d");
+
+    // Setting the label of the y axis and the range
+    QValueAxis *axisY = new QValueAxis;
+    axisY->setTitleText("Measurements (sec)");
+    axisY->setMax(120);
+    axisY->setTickCount(5);
+    axisY->setLabelFormat("%.1f");
+
+    // setting the chart
+    QChart *PSChart = new QChart();
+    PSChart->setTitle("TAL chart");
+    PSChart->legend()->hide();
+    // Adding the LSLseries
+    PSChart->addSeries(LSLseries);
+    PSChart->setAxisX(axisX,LSLseries);
+    PSChart->setAxisY(axisY,LSLseries);
+    // Adding the USLseries
+    PSChart->addSeries(USLseries);
+    PSChart->setAxisX(axisX,USLseries);
+    PSChart->setAxisY(axisY,USLseries);
+
+    // Initializing a chart view so later we can add it and make it visible.
+    QChartView *TALCV = new QChartView(PSChart);
+    TALCV->setRenderHint(QPainter::Antialiasing);
+
+    //creating new table next to the graph.
+    QTableWidget *TALTW = new QTableWidget(5, 6, this);
+    QStringList tableHeadersTitles = {"Termo-\ncouple","TAL","Min time\nabove liquid ","Max time\nabove liquid","UPCL","LPCL"};
+    TALTW->setHorizontalHeaderLabels(tableHeadersTitles);
+    TALTW->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
+    QHeaderView *TALVHV = TALTW->verticalHeader();
+    TALVHV->setSectionResizeMode(QHeaderView::Stretch);
+    QHeaderView *TALHHV = TALTW -> horizontalHeader();
+    TALHHV->setSectionResizeMode(QHeaderView::Stretch);
+
+    //Setting the labels for the chart next to the graph.
+    QVBoxLayout *tableLabelLayout = new QVBoxLayout;
+    QLabel *titleLabel = new QLabel;
+    QFont titleFont("Helvetica", 16, QFont::Bold);
+    titleLabel->setFont(titleFont);
+    titleLabel->setText("Reflow Results");
+    titleLabel->setAlignment(Qt::AlignCenter);
+
+    tableLabelLayout->addWidget(titleLabel);
+    tableLabelLayout->addWidget(TALTW);
+
+    //makeWindow();
+    QHBoxLayout *layout = new QHBoxLayout;
+    layout->addWidget(TALCV);
+    layout->addLayout(tableLabelLayout);
+
+    // Set layout so we can se it in the interface.
+    QWidget *talWindow = new QWidget();
+    talWindow->setLayout(layout);
+    talWindow->setWindowTitle("TAL Results");
+    talWindow->resize(800,360);
+    talWindow->show();
 }
 
 void MainWindow::on_peakTempPBC_clicked()
 {
-    QString value = ui->profileCBC->currentText();
-    QString paste = ui->solderPasteCBC->currentText();
-    QString variable = "Peak Temperature";
-    QString path = ui->lineEdit->text();
+    QStringList peakTempValues = getControlPeakTempValues();
+
+    //setting the font for the labels the font for all labels will be the same.
+    QFont labelFont("Helvetica", 15, QFont::Bold); // fonts for all the labels
+
+    //setting the color for the line in the graph also setting the width of this line.
+    QPen pen(Qt::green);
+    pen.setWidth(3);
+
+    //Lower limit
+    QLineSeries *LSLseries = new QLineSeries();
+    LSLseries->setName("LSL");
+    LSLseries->setPen(pen);
+    LSLseries->setPointLabelsVisible(true);
+    LSLseries->setPointLabelsClipping(true);
+    LSLseries->setPointLabelsFont(labelFont);
+    LSLseries->setPointLabelsFormat("@yPoint");
+    LSLseries->append(1, peakTempValues[0].toDouble());
+    LSLseries->append(5, peakTempValues[0].toDouble());
+
+    //Upper limit
+    QLineSeries *USLseries = new QLineSeries();
+    USLseries->setName("USL");
+    USLseries->setPen(pen);
+    USLseries->setPointLabelsVisible(true);
+    USLseries->setPointLabelsClipping(true);
+    USLseries->setPointLabelsFont(labelFont);
+    USLseries->setPointLabelsFormat("@yPoint");
+    USLseries->append(1, peakTempValues[1].toDouble());
+    USLseries->append(5, peakTempValues[1].toDouble());
 
 
-    qDebug() << value;
-    qDebug() << paste;
-    qDebug() << variable;
-    qDebug() << path;
+    //setting the label of the x axis and the domain.
+    QValueAxis *axisX = new QValueAxis;
+    axisX->setTitleText("Termocouples");
+    axisX->setRange(0, 6);
+    axisX->setTickCount(7);
+    axisX->setLabelFormat("%d");
 
-    QDir dir("C:/Users/Oliver y Ale/Desktop/sTostado-master/DAtaExtractionAndStatisticsCalculation");
-    //se obtiene el path de donde esta ubicada la aplicacion si se ponen los scripts python en el mismo lugar funciona,
-    QString dir1(QCoreApplication::applicationDirPath ());
-    QFileInfo info(dir1, "ControlProcessStatisticsCalculationComplete.py");
-    qDebug() << dir.exists() << info.exists();
-    QProcess process;
-    process.setProcessChannelMode(QProcess::MergedChannels);
-    process.start("python.exe", QStringList()<< info.absoluteFilePath() << path << variable << value << paste);
-    qDebug() << process.atEnd();
-    process.waitForFinished(-1);
-    QString output(process.readAll());
+    // Setting the label of the y axis and the range
+    QValueAxis *axisY = new QValueAxis;
+    axisY->setTitleText("Measurements (Cº)");
+    axisY->setMax(300);
+    axisY->setMin(200);
+    axisY->setTickCount(5);
+    axisY->setLabelFormat("%.1f");
+
+    // setting the chart
+    QChart *PSChart = new QChart();
+    PSChart->setTitle("Peak Temperature chart");
+    PSChart->legend()->hide();
+
+    // Adding the LSLseries
+    PSChart->addSeries(LSLseries);
+    PSChart->setAxisX(axisX,LSLseries);
+    PSChart->setAxisY(axisY,LSLseries);
+
+    // Adding the USLseries
+    PSChart->addSeries(USLseries);
+    PSChart->setAxisX(axisX,USLseries);
+    PSChart->setAxisY(axisY,USLseries);
+
+    // Initializing a chart view so later we can add it and make it visible.
+    QChartView *PeakTempCV = new QChartView(PSChart);
+    PeakTempCV->setRenderHint(QPainter::Antialiasing);
+
+    //creating new table next to the graph.
+    QTableWidget *PeakTempTW = new QTableWidget(5, 6, this);
+    QStringList tableHeadersTitles = {"Termo-\ncouple","Peak\nTemp","Min Peak\nTemp ","Max peak\nTemp","UPCL","LPCL"};
+    PeakTempTW->setHorizontalHeaderLabels(tableHeadersTitles);
+    PeakTempTW->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
+    QHeaderView *PeakTempVHV = PeakTempTW->verticalHeader();
+    PeakTempVHV->setSectionResizeMode(QHeaderView::Stretch);
+    QHeaderView *PeakTempHHV = PeakTempTW -> horizontalHeader();
+    PeakTempHHV->setSectionResizeMode(QHeaderView::Stretch);
+
+    //Setting the labels for the chart next to the graph.
+    QVBoxLayout *tableLabelLayout = new QVBoxLayout;
+    QLabel *titleLabel = new QLabel;
+    QFont titleFont("Helvetica", 16, QFont::Bold);
+    titleLabel->setFont(titleFont);
+    titleLabel->setText("Reflow Results");
+    titleLabel->setAlignment(Qt::AlignCenter);
+
+    tableLabelLayout->addWidget(titleLabel);
+    tableLabelLayout->addWidget(PeakTempTW);
+
+    //makeWindow();
+    QHBoxLayout *layout = new QHBoxLayout;
+    layout->addWidget(PeakTempCV);
+    layout->addLayout(tableLabelLayout);
+
+
+    // Set layout so we can se it in the interface.
+    QWidget *peakTempWindow = new QWidget();
+    peakTempWindow->setLayout(layout);
+    peakTempWindow->setWindowTitle("Peak Temperature Results");
+    peakTempWindow->resize(100,900);
+    peakTempWindow->show();
 }
