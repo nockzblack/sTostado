@@ -4,7 +4,6 @@
 #include <QMainWindow>
 
 
-
 namespace Ui {
 class MainWindow;
 }
@@ -38,12 +37,17 @@ private slots:
 
     void on_profileCBC_activated(int index);
 
-
     void on_cleanPBC_clicked();
-    
+
     void on_TALPBC_clicked();
-    
+
     void on_peakTempPBC_clicked();
+
+    void arrengeStr();
+
+    void on_productionLineCB_activated(int index);
+
+    void on_savePB_clicked();
 
 private:
     Ui::MainWindow *ui;
@@ -64,6 +68,14 @@ private:
     QStringList getRiseSlopeValues();
     QStringList getPeakTempValues();
     QStringList getTimeAboveValues();
+
+    QStringList getControlPeakTempValues();
+    QStringList getControlTimeAboveValues();
+
+    bool saveInfo();
+    QString currentTexts();
+
+    QStringList getStringValues(QString& strNonFilter);
 
 };
 
