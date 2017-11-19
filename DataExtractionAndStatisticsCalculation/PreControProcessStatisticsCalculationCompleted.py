@@ -2,18 +2,16 @@ import PyPDF2
 import os
 import sys
 
-DestinyPath = sys.argv[1] # Necessary parameter to run the code. This variable has to be assigned to the path were is the document that the user want to extract the data of.
-Document = sys.argv[2] # Necessary parameter to run the code. The code has to recieve the name of the document that the user selected (including the extention .pdf)
-UserSolderPasteElection = sys.argv[3] # Necessary parameter to run the code. This variable has to be assigned to th esolder paste user eletion.
+
+DestinyPath = sys.argv[1]  # sys.argv[1]   "/Users/Oliver y Ale/Desktop/Prueba"
+Document = sys.argv[2]  # sys.argv[2]   "arris2.pdf"
+UserSolderPasteElection = sys.argv[3]  # sys,argv[3]   "Alpha OM 338 PT"
 
 OriginPath = os.getcwd()
-
 os.chdir(DestinyPath)
-
 OutPut = open("OutPuts1.txt", "w")
-
 pdfNewFile = open(Document, 'rb')
-pdfReader = PyPDF2.PdfFileReader(pdfNewFile)
+pdfReader = PyPDF2.PdfFileReader(pdfNewFile, strict=False)
 pageObj2 = pdfReader.getPage(1)
 pageObj = pdfReader.getPage(0)
 text = pageObj.extractText()
@@ -21,14 +19,12 @@ text2 = pageObj2.extractText()
 numToWork = text2.find("#")
 toWork = text2[numToWork:]
 
-
 index_PositiveSlope = toWork.index("PositiveSlope")
 index_PositiveSlopeTime = toWork.index("PositiveSlope Time")
 index_TimeAboveLiquids = toWork.index("Time AboveLiquidus")
 index_PeakTemperature = toWork.index("PeakTemperature")
 index_Variable = 0
 index_Lower = text.index("Lower")
-
 
 if "Time AbovePeak" in toWork:
     index_Variable = toWork.index("Time AbovePeak")
@@ -51,7 +47,11 @@ def ValuesPositiveSlope():
         firstPart = PositiveSlopeData[0:point]
         secondPart = PositiveSlopeData[point:end]
         term = firstPart + secondPart
-        print(term, end=" ")
+        if float(term) > 100:
+            term = float(term) / 60
+        else:
+            term = term
+        print(term)
         PositiveSlopeData = PositiveSlopeData[end:]
     true = OutPut.write("1")
     return true
@@ -75,12 +75,12 @@ def ValuesTimeAboveLiquids():
         firstPart = TimeAboveLiquidsData[0:point]
         secondPart = TimeAboveLiquidsData[point:end]
         term = firstPart + secondPart
-        print(term, end=" ")
+        print(term)
         TimeAboveLiquidsData = TimeAboveLiquidsData[end:]
     true = OutPut.write("1")
     return true
 
-print
+
 def ValuesPeakTemperature():
     PeakTemperatureData = ""
     PeakTemperature = toWork[index_PeakTemperature:index_Variable]
@@ -96,7 +96,7 @@ def ValuesPeakTemperature():
         firstPart = PeakTemperatureData[0:point]
         secondPart = PeakTemperatureData[point:end]
         term = firstPart + secondPart
-        print(term, end=" ")
+        print(term)
         PeakTemperatureData = PeakTemperatureData[end:]
     true = OutPut.write("1")
     return true
@@ -118,7 +118,7 @@ def OvenTemperatureData():
         for i in range(10):
             for j in range(2):
                 GeneralData2.remove(GeneralData2[0])
-            print(GeneralData2[0], end=" ")
+            print(int(GeneralData2[0]))
             GeneralData2.remove(GeneralData2[0])
         return True
     else:
@@ -128,20 +128,18 @@ def OvenTemperatureData():
         for i in range(10):
             for j in range(2):
                 TemperatureData.remove(TemperatureData[0])
-            print(TemperatureData[0], end=" ")
+            print(int(TemperatureData[0]))
             TemperatureData.remove(TemperatureData[0])
         return True
 
-print("Values Positive Slope:", end=" ")
+
+print("A")
 ValuesPositiveSlope()
-print("\n")
-print("Values Time Above Liquids:", end=" ")
+print("B")
 ValuesTimeAboveLiquids()
-print("\n")
-print("Values Peak Temperature:", end=" ")
+print("C")
 ValuesPeakTemperature()
-print("\n")
-print("Oven Temperature Data:", end=" ")
+print("D")
 OvenTemperatureData()
 
 OutPut.close()
@@ -158,13 +156,13 @@ while cont < len(conclutions):
     elif conclutions[cont] == "1":
         cont1 += 1
     cont += 1
+DocMessage.close()
 if cont1 == 3:
     SolderPaste1 = "Indium 8.9E Lead free"
     SolderPaste2 = "Indium 5.8LS Lead free"
-    SolderPaste3 = "Senju M40-LS720V-Hf"
+    SolderPaste3 = "Senju M40-LS720V-HF"
     SolderPaste4 = "Alpha OM 338 PT"
     SolderPaste5 = "Indium SMQ98H (Sn63Pb37)"
-
     Warning1 = ""
     MinRS = 0  # MinimumRiseSlope
     MaxRS = 0  # MaximumRiseSlope
@@ -180,7 +178,6 @@ if cont1 == 3:
     LPCLTAL = 0  # LowerPreControlLimitTimeAboveLiquids
     UPCLPT = 0  # UpperPreControlLimitPeakTemperature
     LPCLPT = 0  # LowerPreControlLimitPeakTemperature
-
     while True:
         if UserSolderPasteElection == SolderPaste1 or UserSolderPasteElection == SolderPaste2:
             MinRS = 0.5
@@ -197,7 +194,7 @@ if cont1 == 3:
             LPCLTAL = ((MaxTAL - MinTAL) / 4) + MinTAL
             UPCLPT = (((MaxPT - MinPT) / 4) * 3) + MinPT
             LPCLPT = ((MaxPT - MinPT) / 4) + MinPT
-            print("Pre control limits:", end=" ")
+            print("E")
             print(UPCLRS)
             print(LPCLRS)
             print(UPCLTAL)
@@ -220,7 +217,7 @@ if cont1 == 3:
             LPCLTAL = ((MaxTAL - MinTAL) / 4) + MinTAL
             UPCLPT = (((MaxPT - MinPT) / 4) * 3) + MinPT
             LPCLPT = ((MaxPT - MinPT) / 4) + MinPT
-            print("Pre control limits:", end=" ")
+            print("E")
             print(UPCLRS)
             print(LPCLRS)
             print(UPCLTAL)
@@ -243,7 +240,7 @@ if cont1 == 3:
             LPCLTAL = ((MaxTAL - MinTAL) / 4) + MinTAL
             UPCLPT = (((MaxPT - MinPT) / 4) * 3) + MinPT
             LPCLPT = ((MaxPT - MinPT) / 4) + MinPT
-            print("Pre control limits:", end=" ")
+            print("E")
             print(UPCLRS)
             print(LPCLRS)
             print(UPCLTAL)
@@ -266,7 +263,7 @@ if cont1 == 3:
             LPCLTAL = ((MaxTAL - MinTAL) / 4) + MinTAL
             UPCLPT = (((MaxPT - MinPT) / 4) * 3) + MinPT
             LPCLPT = ((MaxPT - MinPT) / 4) + MinPT
-            print("Pre control limits:", end=" ")
+            print("E")
             print(UPCLRS)
             print(LPCLRS)
             print(UPCLTAL)
@@ -275,6 +272,6 @@ if cont1 == 3:
             print(LPCLPT)
             break
 else:
-    Warning1 = "Impossible to calculate. Try to generate the data again."
-    print(Warning1, end=" ")
-    sys.exit()
+    Warning1 = "Impossible to calculate. Try to generate the data again. There was an error with a thermocouple."
+    print(Warning1)
+sys.exit()
