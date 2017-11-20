@@ -4,7 +4,8 @@ import sys
 import random
 import shutil
 
-DestinyPath = sys.argv[1] # sys.argv[1] "/Users/Oliver y Ale/Desktop/Prueba"
+#DestinyPath = "/Users/Fer/Desktop" # sys.argv[1] "/Users/Fer/Desktop"
+DestinyPath = sys.argv[1]
 OriginPath = os.getcwd()
 os.chdir(DestinyPath)
 
@@ -13,10 +14,13 @@ Values2 = open("Values2.txt", 'w')
 directory = os.listdir(DestinyPath)
 ruta = str(DestinyPath)
 
-UserVariableElection = sys.argv[2]   # sys.argv[2] "Peak Temperature"
+#UserVariableElection = "Peak Temperature"   # sys.argv[2] "Peak Temperature"
+UserVariableElection = sys.argv[2]
 FilesDef = []
-numDocs = sys.argv[3]  # sys.argv[3] 5
+numDocs = int(sys.argv[3])  # sys.argv[3] 5
+numDocs = 5
 UserElection = sys.argv[4]    # sys.argv[4]  "Senju M40-LS720V-HF"
+#UserElection = "Senju M40-LS720V-HF"
 nums = []
 
 
@@ -47,7 +51,7 @@ def documents(Directory, num):
         PDF = FilesDef[len(FilesDef):(len(FilesDef) - num - 1): - 1]
         return PDF
     else:
-        Warning1 = "Aqui solo existen {0} archivos".format(len(FilesDef))
+        Warning1 = "Error"
         print(Warning1)
         sys.exit()   #"""The program will end if the user insert a bigger number than the files quantity on the directory."""
 
@@ -55,7 +59,6 @@ def documents(Directory, num):
 for x in documents(FilesDef, int(numDocs)):
     pdfNewFile = open(ruta + "/" + x, 'rb')
     pdfReader = PyPDF2.PdfFileReader(pdfNewFile, strict=False)
-    #pdfReader.strict(False)
     pageObj2 = pdfReader.getPage(1)
     pageObj = pdfReader.getPage(0)
     text = pageObj.extractText()
@@ -201,7 +204,8 @@ def FileReadingAndFilter():
     try:
         File = open("Values2.txt")
     except ValueError:
-        print("The file cannot be opened", end=" ")
+        print("Error")
+        sys.exit();
     if File:
         for line in File:
             TimeAboveLiquidsTerms = line.split(" ")
@@ -441,9 +445,7 @@ if cont1 == len(conclutions):
         print("C")
         print(RW_TAL)
         print("D")
-        abc = "EFJHIJKLMNOPQRSTU"
         for i in range(len(TimeAboveLiquidsMatrixDef)):
-            print(abc[i])
             print(TimeAboveLiquidsMatrixDef[i])
 
     def PeakTemperatureCalculation(d2, D3, D4, A2):
@@ -505,9 +507,7 @@ if cont1 == len(conclutions):
         print("C")
         print(RW_PT)
         print("D")
-        abc = "EFJHIJKLMNOPQRST"
         for i in range(len(PeakTemperatureMatrixDef)):
-            print(abc[i])
             print(PeakTemperatureMatrixDef[i])
 
     nameDocs = ["Values2.txt", "OutPut2.txt"]
@@ -530,6 +530,7 @@ if cont1 == len(conclutions):
             shutil.move(i, OriginPath)
         # """We have to show all this data to the user on the user nterface."""
 else:
-    Warning2 = "Impossible to calculate. Try to generate the data again."
+    Warning2 = "Error"
     print(Warning2)
+    sys.exit();
 # """If there is an error on one data of one thermal profile this warning has to be shown."""
