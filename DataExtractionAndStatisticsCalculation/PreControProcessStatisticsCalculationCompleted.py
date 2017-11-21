@@ -2,10 +2,12 @@ import PyPDF2
 import os
 import sys
 
-
-DestinyPath = sys.argv[1]  # sys.argv[1]   "/Users/Oliver y Ale/Desktop/Prueba"
-Document = sys.argv[2]  # sys.argv[2]   "arris2.pdf"
-UserSolderPasteElection = sys.argv[3]  # sys,argv[3]   "Alpha OM 338 PT"
+#DestinyPath = "/Users/sergio/Documents/Prueba/Prueba2/Prueba3/Prueba4/Prueba5"
+DestinyPath = sys.argv[1]
+Document = sys.argv[2]
+#Document = "arris2.pdf"
+UserSolderPasteElection = sys.argv[3]
+#UserSolderPasteElection = "Alpha OM 338 PT"
 
 OriginPath = os.getcwd()
 os.chdir(DestinyPath)
@@ -157,6 +159,7 @@ while cont < len(conclutions):
         cont1 += 1
     cont += 1
 DocMessage.close()
+
 if cont1 == 3:
     SolderPaste1 = "Indium 8.9E Lead free"
     SolderPaste2 = "Indium 5.8LS Lead free"
@@ -274,4 +277,5 @@ if cont1 == 3:
 else:
     Warning1 = "Impossible to calculate. Try to generate the data again. There was an error with a thermocouple."
     print(Warning1)
+    sys.exit()
 sys.exit()
